@@ -6,7 +6,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-        {Math.random() == 0 ? <img src={logo} className="App-logo" alt="logo" /> : <div>Dave</div>}
+        <img src={logo} className="App-logo" alt="logo" />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
