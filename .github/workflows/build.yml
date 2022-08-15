@@ -41,3 +41,10 @@ jobs:
       with:
         deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
         publish_dir: ./build
+    - name: Deploy Docker image to Heroku
+      if: ${{ github.ref == 'refs/heads/main' }}
+      uses: gonuit/heroku-docker-deploy@v1.3.3
+      with:
+        email: ${{ secrets.HEROKU_EMAIL }}
+        heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+        heroku_app_name: ${{ secrets.HEROKU_APP_NAME }}
