@@ -1,4 +1,5 @@
 {
+  "root": "build/",
   "routes": {
     "/football-organizer-ui/static/css/*": "/static/css/",
     "/football-organizer-ui/static/js/*": "/static/js/",
