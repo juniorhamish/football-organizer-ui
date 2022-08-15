@@ -20,7 +20,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "test:ci": "react-scripts test --coverage --coverageDirectory=coverage --reporters=default --reporters=jest-junit --watchAll=false",
+    "test:ci": "react-scripts test --coverage --coverageDirectory=coverage --watchAll=false",
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "lint:fix": "eslint --fix ."
@@ -43,22 +43,13 @@
       "last 1 safari version"
     ]
   },
-  "jest-junit": {
-    "suiteName": "jest tests",
-    "outputDirectory": "coverage",
-    "outputName": "unit-tests.xml",
-    "uniqueOutputName": "false",
-    "classNameTemplate": "{classname}",
-    "titleTemplate": "{title}",
-    "ancestorSeparator": " › ",
-    "usePathForSuiteName": "true"
-  },
   "jest": {
     "collectCoverageFrom": [
       "src/**/*.ts*",
       "!src/index.tsx",
       "!src/reportWebVitals.ts"
-    ]
+    ],
+    "coverageReporters": ["lcov", "text"]
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.33.0",
@@ -73,7 +64,6 @@
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.30.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "jest-junit": "^14.0.0",
     "prettier": "^2.7.1",
     "react-scripts": "5.0.1"
   }
