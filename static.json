@@ -1,0 +1,10 @@
+{
+  "root": "build/",
+  "routes": {
+    "/football-organizer-ui/static/css/*": "/static/css/",
+    "/football-organizer-ui/static/js/*": "/static/js/",
+    "/football-organizer-ui/static/media/*": "/static/media/",
+    "/football-organizer-ui/static/**": "/static/",
+    "/football-organizer-ui/*": "/"
+  }
+}
