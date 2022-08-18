@@ -23,7 +23,8 @@
     "test:ci": "react-scripts test --coverage --coverageDirectory=coverage --watchAll=false",
     "eject": "react-scripts eject",
     "lint": "eslint .",
-    "lint:fix": "eslint --fix ."
+    "lint:fix": "eslint --fix .",
+    "npm-ci": "npm ci"
   },
   "eslintConfig": {
     "extends": [
