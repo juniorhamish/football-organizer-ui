@@ -3,9 +3,12 @@ import { Amplify } from 'aws-amplify';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 
-import awsExports from './aws-exports';
+import awsconfig from './aws-exports';
 
-Amplify.configure(awsExports);
+awsconfig.Auth.oauth.redirectSignIn = `${window.location.origin}`;
+awsconfig.Auth.oauth.redirectSignOut = `${window.location.origin}`;
+
+Amplify.configure(awsconfig);
 
 export default function App() {
   return (
