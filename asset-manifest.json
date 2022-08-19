@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/football-organizer-ui/static/css/main.6a06b8b6.css",
-    "main.js": "/football-organizer-ui/static/js/main.688cb227.js",
+    "main.js": "/football-organizer-ui/static/js/main.dd7abdb5.js",
     "static/js/787.52649d81.chunk.js": "/football-organizer-ui/static/js/787.52649d81.chunk.js",
     "index.html": "/football-organizer-ui/index.html",
     "main.6a06b8b6.css.map": "/football-organizer-ui/static/css/main.6a06b8b6.css.map",
-    "main.688cb227.js.map": "/football-organizer-ui/static/js/main.688cb227.js.map",
+    "main.dd7abdb5.js.map": "/football-organizer-ui/static/js/main.dd7abdb5.js.map",
     "787.52649d81.chunk.js.map": "/football-organizer-ui/static/js/787.52649d81.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6a06b8b6.css",
-    "static/js/main.688cb227.js"
+    "static/js/main.dd7abdb5.js"
   ]
 }
