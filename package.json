@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@aws-amplify/ui-react": "^3.4.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^14.4.3",
@@ -11,6 +12,7 @@
     "@types/node": "^18.7.6",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
+    "aws-amplify": "^4.3.31",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^4.7.4",
@@ -50,7 +52,10 @@
       "!src/index.tsx",
       "!src/reportWebVitals.ts"
     ],
-    "coverageReporters": ["lcov", "text"]
+    "coverageReporters": [
+      "lcov",
+      "text"
+    ]
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.33.1",
