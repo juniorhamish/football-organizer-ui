@@ -17,7 +17,7 @@ export default function App() {
         <main>
           <h1>Hello {user?.attributes?.given_name}</h1>
           <button type="button" onClick={signOut}>
-            Sign out
+            Sign out!
           </button>
         </main>
       )}
