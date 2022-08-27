@@ -3,6 +3,12 @@ import { SyntheticEvent, useRef } from 'react';
 import { Auth } from 'aws-amplify';
 import { CognitoUser } from '@aws-amplify/auth';
 
+const formFieldStyle = { padding: 1 };
+const textFieldStyle = {
+  boxShadow: 8,
+  borderRadius: 5,
+};
+
 export default function Login({ onLogin }: { onLogin: (user: CognitoUser) => void }) {
   const userNameRef = useRef<HTMLInputElement>();
   const passwordRef = useRef<HTMLInputElement>();
@@ -19,11 +25,11 @@ export default function Login({ onLogin }: { onLogin: (user: CognitoUser) => voi
         <CardHeader title="Sign In" />
         <form onSubmit={login} aria-label="Sign In Form">
           <CardContent>
-            <FormControl fullWidth sx={{ padding: '10px' }}>
-              <TextField label="Username" inputRef={userNameRef} />
+            <FormControl fullWidth sx={formFieldStyle}>
+              <TextField label="Username" inputRef={userNameRef} sx={textFieldStyle} />
             </FormControl>
-            <FormControl fullWidth sx={{ padding: '10px' }}>
-              <TextField label="Password" inputRef={passwordRef} type="password" />
+            <FormControl fullWidth sx={formFieldStyle}>
+              <TextField label="Password" inputRef={passwordRef} type="password" sx={textFieldStyle} />
             </FormControl>
           </CardContent>
           <CardActions>

@@ -1,6 +1,7 @@
 import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from '@mui/material';
 import { useMemo } from 'react';
 import { Amplify } from 'aws-amplify';
+import { BrowserRouter } from 'react-router-dom';
 import FootballOrganizer from './main/FootballOrganizer';
 
 import awsConfig from './aws-exports';
@@ -25,7 +26,9 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <FootballOrganizer />
+      <BrowserRouter>
+        <FootballOrganizer />
+      </BrowserRouter>
     </ThemeProvider>
   );
 }
