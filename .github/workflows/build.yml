@@ -35,12 +35,6 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    - name: Deploy to GitHub Pages
-      if: ${{ github.ref == 'refs/heads/main' }}
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-        publish_dir: ./build
     - name: Deploy Docker image to Heroku
       if: ${{ github.ref == 'refs/heads/main' }}
       uses: gonuit/heroku-docker-deploy@v1.3.3
