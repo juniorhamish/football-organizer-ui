@@ -9,7 +9,7 @@ export default function Login({ onLogin }: { onLogin: (user: CognitoUser) => voi
 
   const login = (event: SyntheticEvent) => {
     event.preventDefault();
-    Auth.signIn(userNameRef.current?.value || '', passwordRef.current?.value).then((user) => {
+    Auth.signIn(userNameRef.current?.value as string, passwordRef.current?.value).then((user) => {
       onLogin(user);
     });
   };
