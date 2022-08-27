@@ -5,8 +5,8 @@ import '@aws-amplify/ui-react/styles.css';
 
 import awsconfig from './aws-exports';
 
-awsconfig.Auth.oauth.redirectSignIn = `${window.location.origin}/football-organizer-ui/`;
-awsconfig.Auth.oauth.redirectSignOut = `${window.location.origin}/football-organizer-ui/`;
+awsconfig.Auth.oauth.redirectSignIn = `${window.location.origin}/`;
+awsconfig.Auth.oauth.redirectSignOut = `${window.location.origin}/`;
 
 Amplify.configure(awsconfig);
 
