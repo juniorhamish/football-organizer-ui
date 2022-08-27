@@ -1,26 +1,31 @@
+import { createTheme, CssBaseline, ThemeProvider, useMediaQuery } from '@mui/material';
+import { useMemo } from 'react';
 import { Amplify } from 'aws-amplify';
+import FootballOrganizer from './main/FootballOrganizer';
 
-import { Authenticator } from '@aws-amplify/ui-react';
-import '@aws-amplify/ui-react/styles.css';
+import awsConfig from './aws-exports';
 
-import awsconfig from './aws-exports';
+awsConfig.Auth.oauth.redirectSignIn = `${window.location.origin}/`;
+awsConfig.Auth.oauth.redirectSignOut = `${window.location.origin}/`;
 
-awsconfig.Auth.oauth.redirectSignIn = `${window.location.origin}/`;
-awsconfig.Auth.oauth.redirectSignOut = `${window.location.origin}/`;
-
-Amplify.configure(awsconfig);
+Amplify.configure(awsConfig);
 
 export default function App() {
+  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: prefersDarkMode ? 'dark' : 'light',
+        },
+      }),
+    [prefersDarkMode]
+  );
+
   return (
-    <Authenticator signUpAttributes={['email', 'given_name', 'family_name']} socialProviders={['amazon', 'facebook', 'google']}>
-      {({ signOut, user }) => (
-        <main>
-          <h1>Hello {user?.attributes?.given_name}</h1>
-          <button type="button" onClick={signOut}>
-            Sign out
-          </button>
-        </main>
-      )}
-    </Authenticator>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <FootballOrganizer />
+    </ThemeProvider>
   );
 }
