@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@aws-amplify/auth": "^4.6.4",
-    "@aws-amplify/ui-react": "^3.4.1",
     "@emotion/react": "^11.10.0",
     "@emotion/styled": "^11.10.0",
     "@mui/icons-material": "^5.10.2",
@@ -16,6 +14,7 @@
     "@types/node": "^18.7.13",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",
+    "amazon-cognito-identity-js": "^5.2.10",
     "aws-amplify": "^4.3.33",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
