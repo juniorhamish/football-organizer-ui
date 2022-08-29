@@ -1,8 +1,8 @@
 import { AppBar, Button, Toolbar, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
-import { Routes, Route, Link, useNavigate, Navigate } from 'react-router-dom';
-import { CognitoUser } from '@aws-amplify/auth';
+import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { CognitoUser } from 'amazon-cognito-identity-js';
 import Login from './auth/Login';
 
 export default function FootballOrganizer() {
