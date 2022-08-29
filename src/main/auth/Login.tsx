@@ -1,15 +1,4 @@
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Container,
-  FormControl,
-  IconButton,
-  InputAdornment,
-  TextField
-} from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardHeader, Container, FormControl, IconButton, InputAdornment, TextField } from '@mui/material';
 import { SyntheticEvent, useRef, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { CognitoUser } from 'amazon-cognito-identity-js';
