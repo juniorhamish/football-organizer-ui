@@ -2,6 +2,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CognitoUser, ICognitoUserData } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
+import loginForm from './Login.test.helpers';
 
 import Login from './Login';
 import mocked = jest.mocked;
@@ -11,32 +12,8 @@ jest.mock('aws-amplify');
 
 const renderLogin = (onLogin: (user: CognitoUser) => void = jest.fn()) => {
   const renderResult = render(<Login onLogin={onLogin} />);
-  const { getByLabelText, getByRole } = renderResult;
   const user = userEvent.setup();
-  const usernameField = () => getByRole('textbox', { name: 'Username' });
-  const passwordField = () => getByLabelText('Password');
-  const submitButton = () => getByRole('button', { name: 'Submit' });
-  const enterUsername = async (username: string) => user.type(usernameField(), username);
-  const enterPassword = async (password: string) => user.type(passwordField(), password);
-  const showPasswordButton = () => getByRole('button', { name: 'Show Password' });
-  const hidePasswordButton = () => getByRole('button', { name: 'Hide Password' });
-  const submitLogin = async (username: string, password: string) => {
-    await enterUsername(username);
-    await enterPassword(password);
-    await user.click(submitButton());
-  };
-  return {
-    ...renderResult,
-    user,
-    enterUsername,
-    enterPassword,
-    submitLogin,
-    usernameField,
-    passwordField,
-    submitButton,
-    showPasswordButton,
-    hidePasswordButton,
-  };
+  return { ...renderResult, user, ...loginForm(renderResult, user) };
 };
 
 describe('login form', () => {
