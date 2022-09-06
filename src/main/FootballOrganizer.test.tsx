@@ -1,94 +1,114 @@
-import { act, render, screen, within } from '@testing-library/react';
+import { render, RenderResult, within } from '@testing-library/react';
 import amplify from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
-import { UserEvent } from '@testing-library/user-event/setup/setup';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
+import { act } from 'react-dom/test-utils';
 import FootballOrganizer from './FootballOrganizer';
+import loginForm from './auth/Login.test.helpers';
 
 jest.mock('aws-amplify');
 
-const renderWithRouter = (component: ReactElement, { route = '/' } = {}) => {
+const renderWithRouter = async (component: ReactElement, route = '/') => {
   window.history.pushState({}, 'Home', route);
 
-  render(component, { wrapper: BrowserRouter });
+  const user = userEvent.setup();
+  let renderResult = {} as RenderResult;
+  await act(async () => {
+    renderResult = render(component, { wrapper: BrowserRouter });
+  });
+  const { getByRole } = renderResult;
+  const banner = () => getByRole('banner');
+  const heading = () => within(banner()).getByRole('heading');
+  const signInButton = () => within(banner()).getByRole('button', { name: 'Sign in' });
+  const signUpButton = () => within(banner()).getByRole('button', { name: 'Sign up' });
+  const signOutButton = () => within(banner()).getByRole('button', { name: 'Sign out' });
+  const myProfileButton = () => within(banner()).getByRole('button', { name: 'My Profile' });
+  const bannerButtonNames = () =>
+    within(banner())
+      .getAllByRole('button')
+      .map((button) => button.textContent);
+  return { ...renderResult, user, heading, signInButton, signUpButton, signOutButton, myProfileButton, bannerButtonNames, ...loginForm(renderResult, user) };
 };
-const withinBanner = () => within(screen.getByRole('banner'));
-const bannerButtonNames = () =>
-  withinBanner()
-    .getAllByRole('button')
-    .map((button) => button.textContent);
-const withinSignInForm = () => within(screen.getByRole('form', { name: 'Sign In Form' }));
 
 describe('football organizer', () => {
-  let user: UserEvent;
   beforeEach(() => {
-    user = userEvent.setup();
     amplify.Auth.currentAuthenticatedUser.mockImplementation(() => new Promise(jest.fn()));
   });
   describe('app bar', () => {
-    it('should have a title', () => {
-      renderWithRouter(<FootballOrganizer />);
+    it('should have a title', async () => {
+      const { heading } = await renderWithRouter(<FootballOrganizer />);
 
-      expect(withinBanner().getByRole('heading')).toHaveTextContent('Football Organizer');
+      expect(heading()).toHaveTextContent('Football Organizer');
     });
     describe('not authenticated', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         amplify.Auth.currentAuthenticatedUser.mockRejectedValue();
-        await act(async () => {
-          renderWithRouter(<FootballOrganizer />);
-        });
       });
-      it('should have a sign in button', () => {
-        expect(withinBanner().getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
+      it('should have a sign in button', async () => {
+        const { signInButton } = await renderWithRouter(<FootballOrganizer />);
+
+        expect(signInButton()).toBeInTheDocument();
       });
-      it('should have a sign up button', () => {
-        expect(withinBanner().getByRole('button', { name: 'Sign up' })).toBeInTheDocument();
+      it('should have a sign up button', async () => {
+        const { signUpButton } = await renderWithRouter(<FootballOrganizer />);
+
+        expect(signUpButton()).toBeInTheDocument();
       });
-      it('should not have a profile button', () => {
+      it('should not have a profile button', async () => {
+        const { bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
+
         expect(bannerButtonNames()).not.toContain('My profile');
       });
-      it('should not have a sign out button', () => {
+      it('should not have a sign out button', async () => {
+        const { bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
+
         expect(bannerButtonNames()).not.toContain('Sign out');
       });
       describe('sign in', () => {
         it('should show the authenticated state', async () => {
+          const { user, signInButton, signOutButton, submitLogin } = await renderWithRouter(<FootballOrganizer />);
           amplify.Auth.signIn.mockResolvedValue({});
-          await user.click(withinBanner().getByRole('button', { name: 'Sign in' }));
-          await user.type(withinSignInForm().getByRole('textbox', { name: 'Username' }), 'Foo');
-          await user.type(withinSignInForm().getByLabelText('Password'), 'Bar');
-          await user.click(withinSignInForm().getByRole('button', { name: 'Submit' }));
+          await user.click(signInButton());
 
-          expect(withinBanner().getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
+          await submitLogin('Foo', 'Bar');
+
+          expect(signOutButton()).toBeInTheDocument();
         });
       });
     });
     describe('authenticated', () => {
       beforeEach(async () => {
         amplify.Auth.currentAuthenticatedUser.mockResolvedValue({});
-        await act(async () => {
-          renderWithRouter(<FootballOrganizer />);
-        });
       });
-      it('should have a profile button', () => {
-        expect(withinBanner().getByRole('button', { name: 'My Profile' })).toBeInTheDocument();
+      it('should have a profile button', async () => {
+        const { myProfileButton } = await renderWithRouter(<FootballOrganizer />);
+
+        expect(myProfileButton()).toBeInTheDocument();
       });
-      it('should have a sign out button', () => {
-        expect(withinBanner().getByRole('button', { name: 'Sign out' })).toBeInTheDocument();
+      it('should have a sign out button', async () => {
+        const { signOutButton } = await renderWithRouter(<FootballOrganizer />);
+
+        expect(signOutButton()).toBeInTheDocument();
       });
-      it('should not have a sign in button', () => {
+      it('should not have a sign in button', async () => {
+        const { bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
+
         expect(bannerButtonNames()).not.toContain('Sign in');
       });
-      it('should not have a sign up button', () => {
+      it('should not have a sign up button', async () => {
+        const { bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
+
         expect(bannerButtonNames()).not.toContain('Sign up');
       });
       describe('log out', () => {
         it('should return to the unauthenticated state', async () => {
+          const { user, signOutButton, signInButton } = await renderWithRouter(<FootballOrganizer />);
           amplify.Auth.signOut.mockResolvedValue({});
 
-          await user.click(withinBanner().getByRole('button', { name: 'Sign out' }));
+          await user.click(signOutButton());
 
-          expect(withinBanner().getByRole('button', { name: 'Sign in' })).toBeInTheDocument();
+          expect(signInButton()).toBeInTheDocument();
         });
       });
     });
@@ -96,11 +116,10 @@ describe('football organizer', () => {
   describe('router', () => {
     it('should redirect to the homepage when navigating to the sign in page and already authenticated', async () => {
       amplify.Auth.currentAuthenticatedUser.mockResolvedValue({});
-      await act(async () => {
-        renderWithRouter(<FootballOrganizer />, { route: '/login' });
-      });
 
-      expect(screen.queryByRole('form', { name: 'Sign In Form' })).toBeNull();
+      const { queryByRole } = await renderWithRouter(<FootballOrganizer />, '/login');
+
+      expect(queryByRole('form', { name: 'Sign In Form' })).toBeNull();
     });
   });
 });
