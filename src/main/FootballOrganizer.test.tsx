@@ -1,4 +1,4 @@
-import { render, RenderResult, screen, within } from '@testing-library/react';
+import { render, RenderResult, within } from '@testing-library/react';
 import amplify from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
@@ -9,7 +9,7 @@ import loginForm from './auth/Login.test.helpers';
 
 jest.mock('aws-amplify');
 
-const renderWithRouter = async (component: ReactElement, { route = '/' } = {}) => {
+const renderWithRouter = async (component: ReactElement, route = '/') => {
   window.history.pushState({}, 'Home', route);
 
   const user = userEvent.setup();
@@ -70,6 +70,7 @@ describe('football organizer', () => {
           const { user, signInButton, signOutButton, submitLogin } = await renderWithRouter(<FootballOrganizer />);
           amplify.Auth.signIn.mockResolvedValue({});
           await user.click(signInButton());
+
           await submitLogin('Foo', 'Bar');
 
           expect(signOutButton()).toBeInTheDocument();
@@ -115,9 +116,10 @@ describe('football organizer', () => {
   describe('router', () => {
     it('should redirect to the homepage when navigating to the sign in page and already authenticated', async () => {
       amplify.Auth.currentAuthenticatedUser.mockResolvedValue({});
-      await renderWithRouter(<FootballOrganizer />);
 
-      expect(screen.queryByRole('form', { name: 'Sign In Form' })).toBeNull();
+      const { queryByRole } = await renderWithRouter(<FootballOrganizer />, '/login');
+
+      expect(queryByRole('form', { name: 'Sign In Form' })).toBeNull();
     });
   });
 });
