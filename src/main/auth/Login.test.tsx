@@ -15,6 +15,7 @@ const renderLogin = (onLogin: (user: CognitoUser) => void = jest.fn()) => {
   const user = userEvent.setup();
   const usernameField = () => getByRole('textbox', { name: 'Username' });
   const passwordField = () => getByLabelText('Password');
+  const submitButton = () => getByRole('button', { name: 'Submit' });
   const enterUsername = async (username: string) => user.type(usernameField(), username);
   const enterPassword = async (password: string) => user.type(passwordField(), password);
   const showPasswordButton = () => getByRole('button', { name: 'Show Password' });
@@ -22,7 +23,7 @@ const renderLogin = (onLogin: (user: CognitoUser) => void = jest.fn()) => {
   const submitLogin = async (username: string, password: string) => {
     await enterUsername(username);
     await enterPassword(password);
-    await user.click(getByRole('button', { name: 'Submit' }));
+    await user.click(submitButton());
   };
   return {
     ...renderResult,
@@ -32,6 +33,7 @@ const renderLogin = (onLogin: (user: CognitoUser) => void = jest.fn()) => {
     submitLogin,
     usernameField,
     passwordField,
+    submitButton,
     showPasswordButton,
     hidePasswordButton,
   };
@@ -213,5 +215,24 @@ describe('login form', () => {
     await submitLogin('Foo', 'Bar');
 
     expect(getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
+  });
+  it('should disable the submit button when no password is entered', async () => {
+    const { enterUsername, submitButton } = renderLogin();
+
+    await enterUsername('MyUsername');
+
+    expect(submitButton()).toBeDisabled();
+  });
+  it('should disable the submit button when no username is entered', async () => {
+    const { enterPassword, submitButton } = renderLogin();
+
+    await enterPassword('MyPassword');
+
+    expect(submitButton()).toBeDisabled();
+  });
+  it('should disable the submit button when no values are entered', async () => {
+    const { submitButton } = renderLogin();
+
+    expect(submitButton()).toBeDisabled();
   });
 });
