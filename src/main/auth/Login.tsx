@@ -1,5 +1,5 @@
 import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, IconButton, InputAdornment, TextField } from '@mui/material';
-import { SyntheticEvent, useId, useRef, useState } from 'react';
+import { SyntheticEvent, useId, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
@@ -11,9 +11,9 @@ const textFieldStyle = {
 };
 
 export default function Login({ onLogin }: { onLogin: (user: CognitoUser) => void }) {
-  const userNameRef = useRef<HTMLInputElement>();
-  const passwordRef = useRef<HTMLInputElement>();
   const baseId = useId();
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [showLoginFailedMessage, setShowLoginFailedMessage] = useState(false);
   const [loginInProgress, setLoginInProgress] = useState(false);
@@ -22,7 +22,7 @@ export default function Login({ onLogin }: { onLogin: (user: CognitoUser) => voi
   const login = (event: SyntheticEvent) => {
     event.preventDefault();
     setLoginInProgress(true);
-    Auth.signIn(userNameRef.current?.value as string, passwordRef.current?.value)
+    Auth.signIn(username, password)
       .then((user) => {
         onLogin(user);
       })
@@ -46,19 +46,25 @@ export default function Login({ onLogin }: { onLogin: (user: CognitoUser) => voi
                   error={showLoginFailedMessage}
                   inputProps={showLoginFailedMessage ? { 'aria-errormessage': errorMessageFieldId } : {}}
                   label="Username"
-                  inputRef={userNameRef}
+                  value={username}
                   sx={textFieldStyle}
-                  onChange={() => setShowLoginFailedMessage(false)}
+                  onChange={(event) => {
+                    setShowLoginFailedMessage(false);
+                    setUsername(event.target.value);
+                  }}
                 />
               </FormControl>
               <FormControl fullWidth sx={formFieldStyle}>
                 <TextField
                   label="Password"
                   error={showLoginFailedMessage}
-                  inputRef={passwordRef}
+                  value={password}
                   type={passwordVisible ? 'text' : 'password'}
                   sx={textFieldStyle}
-                  onChange={() => setShowLoginFailedMessage(false)}
+                  onChange={(event) => {
+                    setShowLoginFailedMessage(false);
+                    setPassword(event.target.value);
+                  }}
                   InputProps={{
                     inputProps: showLoginFailedMessage ? { 'aria-errormessage': errorMessageFieldId } : {},
                     endAdornment: (
@@ -78,7 +84,9 @@ export default function Login({ onLogin }: { onLogin: (user: CognitoUser) => voi
               )}
             </CardContent>
             <CardActions>
-              <Button type="submit">Submit</Button>
+              <Button type="submit" disabled={!username || !password}>
+                Submit
+              </Button>
             </CardActions>
           </form>
         </Card>
