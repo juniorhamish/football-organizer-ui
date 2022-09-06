@@ -1,7 +1,7 @@
-import { AppBar, Button, Toolbar, Typography } from '@mui/material';
+import { AppBar, Button, Link, Toolbar, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
-import { Link, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { CognitoUser } from 'amazon-cognito-identity-js';
 import Login from './auth/Login';
 
@@ -35,17 +35,19 @@ export default function FootballOrganizer() {
       <AppBar position="sticky" sx={{ marginBottom: '50px' }}>
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Football Organizer
+            <Link component={RouterLink} color="secondary" underline="hover" to="/">
+              Football Organizer
+            </Link>
           </Typography>
           {!currentUser && (
-            <Link to="/login">
-              <Button color="inherit">Sign in</Button>
+            <Link component={RouterLink} to="/login">
+              <Button color="secondary">Sign in</Button>
             </Link>
           )}
-          {!currentUser && <Button color="inherit">Sign up</Button>}
-          {currentUser && <Button color="inherit">My Profile</Button>}
+          {!currentUser && <Button color="secondary">Sign up</Button>}
+          {currentUser && <Button color="secondary">My Profile</Button>}
           {currentUser && (
-            <Button color="inherit" onClick={logOut}>
+            <Button color="secondary" onClick={logOut}>
               Sign out
             </Button>
           )}

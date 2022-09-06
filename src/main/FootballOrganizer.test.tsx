@@ -19,7 +19,7 @@ const renderWithRouter = async (component: ReactElement, route = '/') => {
   });
   const { getByRole } = renderResult;
   const banner = () => getByRole('banner');
-  const heading = () => within(banner()).getByRole('heading');
+  const heading = () => within(within(banner()).getByRole('heading')).getByRole('link');
   const signInButton = () => within(banner()).getByRole('button', { name: 'Sign in' });
   const signUpButton = () => within(banner()).getByRole('button', { name: 'Sign up' });
   const signOutButton = () => within(banner()).getByRole('button', { name: 'Sign out' });
@@ -40,6 +40,13 @@ describe('football organizer', () => {
       const { heading } = await renderWithRouter(<FootballOrganizer />);
 
       expect(heading()).toHaveTextContent('Football Organizer');
+    });
+    it('should navigate to the homepage when the title is clicked', async () => {
+      const { heading, user, queryByRole } = await renderWithRouter(<FootballOrganizer />, '/login');
+
+      await user.click(heading());
+
+      expect(queryByRole('form', { name: 'Sign In Form' })).toBeNull();
     });
     describe('not authenticated', () => {
       beforeEach(() => {
