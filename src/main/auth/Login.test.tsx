@@ -7,7 +7,6 @@ import Login from './Login';
 import mocked = jest.mocked;
 import { User } from './User';
 
-jest.mock('amazon-cognito-identity-js');
 jest.mock('aws-amplify');
 
 const renderLogin = (onLogin: (user: User) => void = jest.fn()) => {
