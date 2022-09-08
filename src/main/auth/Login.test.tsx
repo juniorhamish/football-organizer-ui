@@ -1,16 +1,16 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { CognitoUser, ICognitoUserData } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 import loginForm from './Login.test.helpers';
 
 import Login from './Login';
 import mocked = jest.mocked;
+import { User } from './User';
 
 jest.mock('amazon-cognito-identity-js');
 jest.mock('aws-amplify');
 
-const renderLogin = (onLogin: (user: CognitoUser) => void = jest.fn()) => {
+const renderLogin = (onLogin: (user: User) => void = jest.fn()) => {
   const renderResult = render(<Login onLogin={onLogin} />);
   const user = userEvent.setup();
   return { ...renderResult, user, ...loginForm(renderResult, user) };
@@ -27,7 +27,7 @@ describe('login form', () => {
   });
   it('should invoke the onLogin callback on success', async () => {
     const onLogin = jest.fn();
-    const loggedInUser = new CognitoUser({} as ICognitoUserData);
+    const loggedInUser = {} as User;
     mocked(Auth).signIn.mockResolvedValue(loggedInUser);
     const { submitLogin } = renderLogin(onLogin);
 

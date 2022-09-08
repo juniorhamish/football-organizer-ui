@@ -1,8 +1,8 @@
 import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, IconButton, InputAdornment, TextField } from '@mui/material';
 import { SyntheticEvent, useId, useState } from 'react';
 import { Auth } from 'aws-amplify';
-import { CognitoUser } from 'amazon-cognito-identity-js';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { User } from './User';
 
 const formFieldStyle = { padding: 1 };
 const textFieldStyle = {
@@ -10,7 +10,7 @@ const textFieldStyle = {
   borderRadius: 1,
 };
 
-export default function Login({ onLogin }: { onLogin: (user: CognitoUser) => void }) {
+export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
   const baseId = useId();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -23,12 +23,8 @@ export default function Login({ onLogin }: { onLogin: (user: CognitoUser) => voi
     event.preventDefault();
     setLoginInProgress(true);
     Auth.signIn(username, password)
-      .then((user) => {
-        onLogin(user);
-      })
-      .catch(() => {
-        setShowLoginFailedMessage(true);
-      })
+      .then((user) => onLogin(user))
+      .catch(() => setShowLoginFailedMessage(true))
       .finally(() => setLoginInProgress(false));
   };
   return (

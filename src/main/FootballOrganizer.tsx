@@ -2,21 +2,17 @@ import { AppBar, Button, Link, Toolbar, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { Link as RouterLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
-import { CognitoUser } from 'amazon-cognito-identity-js';
 import Login from './auth/Login';
+import { User } from './auth/User';
 
 export default function FootballOrganizer() {
   const navigate = useNavigate();
-  const [currentUser, setCurrentUser] = useState<CognitoUser>();
+  const [currentUser, setCurrentUser] = useState<User>();
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
-      .then((user) => {
-        setCurrentUser(user);
-      })
-      .catch(() => {
-        setCurrentUser(undefined);
-      });
+      .then((user) => setCurrentUser(user))
+      .catch(() => setCurrentUser(undefined));
   }, []);
 
   const logOut = () => {
@@ -24,8 +20,7 @@ export default function FootballOrganizer() {
       setCurrentUser(undefined);
     });
   };
-
-  const onLogin = (user: CognitoUser) => {
+  const onLogin = (user: User) => {
     setCurrentUser(user);
     navigate('/', { replace: true });
   };
