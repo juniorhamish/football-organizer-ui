@@ -132,6 +132,22 @@ describe('football organizer', () => {
 
         expect(myAccountButton()).toBeInTheDocument();
       });
+      it('should close the account menu when pressing escape', async () => {
+        const { accountMenuButton, queryByRole, user } = await renderWithRouter(<FootballOrganizer />);
+        await user.click(accountMenuButton());
+
+        await user.keyboard('{Esc}');
+
+        expect(queryByRole('menu')).toBeNull();
+      });
+      it('should close the account menu when clicking on it', async () => {
+        const { accountMenuButton, queryByRole, getByRole, user } = await renderWithRouter(<FootballOrganizer />);
+        await user.click(accountMenuButton());
+
+        await user.click(getByRole('presentation'));
+
+        expect(queryByRole('menu')).toBeNull();
+      });
       it('should not have a sign in button', async () => {
         const { bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
 
