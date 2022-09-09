@@ -45,13 +45,20 @@ export default function FootballOrganizer() {
           {!currentUser && <Button color="secondary">Sign up</Button>}
           {currentUser && (
             <Tooltip title="Account">
-              <IconButton ref={accountMenuAnchor} onClick={() => setAccountMenuOpen(true)}>
+              <IconButton
+                ref={accountMenuAnchor}
+                onClick={() => setAccountMenuOpen(true)}
+                aria-haspopup="true"
+                aria-controls={accountMenuOpen ? 'account-menu' : undefined}
+                aria-expanded={accountMenuOpen ? 'true' : undefined}
+              >
                 <Avatar>{`${currentUser.attributes.given_name[0]}${currentUser.attributes.family_name[0]}`}</Avatar>
               </IconButton>
             </Tooltip>
           )}
         </Toolbar>
         <Menu
+          id="account-menu"
           open={accountMenuOpen}
           anchorEl={accountMenuAnchor.current}
           onClose={() => setAccountMenuOpen(false)}
