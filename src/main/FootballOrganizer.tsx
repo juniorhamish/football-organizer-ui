@@ -5,6 +5,7 @@ import { Link as RouterLink, Navigate, Route, Routes, useNavigate } from 'react-
 import { Logout } from '@mui/icons-material';
 import Login from './auth/Login';
 import { User } from './auth/User';
+import UserAvatar from './components/UserAvatar';
 
 export default function FootballOrganizer() {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export default function FootballOrganizer() {
                 aria-controls={accountMenuOpen ? 'account-menu' : undefined}
                 aria-expanded={accountMenuOpen ? 'true' : undefined}
               >
-                <Avatar>{`${currentUser.attributes.given_name[0]}${currentUser.attributes.family_name[0]}`}</Avatar>
+                <UserAvatar name={`${currentUser.attributes.given_name} ${currentUser.attributes.family_name}`} />
               </IconButton>
             </Tooltip>
           )}
