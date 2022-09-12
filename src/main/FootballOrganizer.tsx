@@ -6,6 +6,7 @@ import { Logout } from '@mui/icons-material';
 import Login from './auth/Login';
 import { User } from './auth/User';
 import UserAvatar from './components/UserAvatar';
+import SignUp from './auth/SignUp';
 
 export default function FootballOrganizer() {
   const navigate = useNavigate();
@@ -43,7 +44,11 @@ export default function FootballOrganizer() {
               <Button color="secondary">Sign in</Button>
             </Link>
           )}
-          {!currentUser && <Button color="secondary">Sign up</Button>}
+          {!currentUser && (
+            <Link component={RouterLink} to="/signup">
+              <Button color="secondary">Sign up</Button>
+            </Link>
+          )}
           {currentUser && (
             <Tooltip title="Account">
               <IconButton
@@ -108,6 +113,7 @@ export default function FootballOrganizer() {
       <Routes>
         <Route path="/" element={<div />} />
         <Route path="/login" element={!currentUser ? <Login onLogin={onLogin} /> : <Navigate to="/" replace />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </div>
   );

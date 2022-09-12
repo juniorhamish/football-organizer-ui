@@ -179,5 +179,12 @@ describe('football organizer', () => {
 
       expect(queryByRole('form', { name: 'Sign In Form' })).toBeNull();
     });
+    it('should show the sign up form when sign up is clicked', async () => {
+      const { getByRole, signUpButton, user } = await renderWithRouter(<FootballOrganizer />);
+
+      await user.click(signUpButton());
+
+      expect(getByRole('form', { name: 'Sign Up Form' })).toBeInTheDocument();
+    });
   });
 });
