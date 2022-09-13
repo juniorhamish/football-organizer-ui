@@ -74,7 +74,7 @@ describe('login form', () => {
   it('should not show the login failed message by default', () => {
     const { queryByText } = renderLogin();
 
-    expect(queryByText('Login failed')).toBeNull();
+    expect(queryByText('Login failed')).not.toBeInTheDocument();
   });
   it('should mark the username field as invalid if login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
@@ -108,7 +108,7 @@ describe('login form', () => {
 
     await enterUsername('A');
 
-    expect(queryByText('Login failed')).toBeNull();
+    expect(queryByText('Login failed')).not.toBeInTheDocument();
   });
   it('should mark the password field as invalid if login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
@@ -142,7 +142,7 @@ describe('login form', () => {
 
     await enterPassword('A');
 
-    expect(queryByText('Login failed')).toBeNull();
+    expect(queryByText('Login failed')).not.toBeInTheDocument();
   });
   it('should show a progress mask when login is in progress', async () => {
     mocked(Auth).signIn.mockImplementation(() => new Promise(jest.fn()));

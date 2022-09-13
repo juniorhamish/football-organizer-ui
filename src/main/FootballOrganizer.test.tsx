@@ -1,4 +1,4 @@
-import { render, RenderResult, within } from '@testing-library/react';
+import { render, RenderResult, within, screen } from '@testing-library/react';
 import { Auth } from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
@@ -27,9 +27,8 @@ const renderWithRouter = async (component: ReactElement, route = '/') => {
   await act(async () => {
     renderResult = render(component, { wrapper: BrowserRouter });
   });
-  const { getByRole } = renderResult;
-  const banner = () => getByRole('banner');
-  const menu = () => getByRole('menu');
+  const banner = () => screen.getByRole('banner');
+  const menu = () => screen.getByRole('menu');
   const heading = () => within(within(banner()).getByRole('heading')).getByRole('link');
   const signInButton = () => within(banner()).getByRole('button', { name: 'Sign in' });
   const signUpButton = () => within(banner()).getByRole('button', { name: 'Sign up' });
@@ -65,11 +64,11 @@ describe('football organizer', () => {
       expect(heading()).toHaveTextContent('Football Organizer');
     });
     it('should navigate to the homepage when the title is clicked', async () => {
-      const { heading, user, queryByRole } = await renderWithRouter(<FootballOrganizer />, '/login');
+      const { heading, user } = await renderWithRouter(<FootballOrganizer />, '/login');
 
       await user.click(heading());
 
-      expect(queryByRole('form', { name: 'Sign In Form' })).toBeNull();
+      expect(screen.queryByRole('form', { name: 'Sign In Form' })).not.toBeInTheDocument();
     });
     describe('not authenticated', () => {
       beforeEach(() => {
@@ -133,20 +132,20 @@ describe('football organizer', () => {
         expect(myAccountButton()).toBeInTheDocument();
       });
       it('should close the account menu when pressing escape', async () => {
-        const { accountMenuButton, queryByRole, user } = await renderWithRouter(<FootballOrganizer />);
+        const { accountMenuButton, user } = await renderWithRouter(<FootballOrganizer />);
         await user.click(accountMenuButton());
 
         await user.keyboard('{Esc}');
 
-        expect(queryByRole('menu')).toBeNull();
+        expect(screen.queryByRole('menu')).not.toBeInTheDocument();
       });
       it('should close the account menu when clicking on it', async () => {
-        const { accountMenuButton, queryByRole, getByRole, user } = await renderWithRouter(<FootballOrganizer />);
+        const { accountMenuButton, user } = await renderWithRouter(<FootballOrganizer />);
         await user.click(accountMenuButton());
 
-        await user.click(getByRole('presentation'));
+        await user.click(screen.getByRole('presentation'));
 
-        expect(queryByRole('menu')).toBeNull();
+        expect(screen.queryByRole('menu')).not.toBeInTheDocument();
       });
       it('should not have a sign in button', async () => {
         const { bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
@@ -175,9 +174,9 @@ describe('football organizer', () => {
     it('should redirect to the homepage when navigating to the sign in page and already authenticated', async () => {
       setLoggedInUser();
 
-      const { queryByRole } = await renderWithRouter(<FootballOrganizer />, '/login');
+      await renderWithRouter(<FootballOrganizer />, '/login');
 
-      expect(queryByRole('form', { name: 'Sign In Form' })).toBeNull();
+      expect(screen.queryByRole('form', { name: 'Sign In Form' })).not.toBeInTheDocument();
     });
   });
 });
