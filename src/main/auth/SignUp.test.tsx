@@ -6,6 +6,7 @@ const emailAddressField = () => screen.getByRole('textbox', { name: 'Email Addre
 const firstNameField = () => screen.getByRole('textbox', { name: 'First Name' });
 const lastNameField = () => screen.getByRole('textbox', { name: 'Last Name' });
 const passwordField = () => screen.getByLabelText('Password *');
+const submitButton = () => screen.getByRole('button', { name: 'Submit' });
 
 describe('sign up', () => {
   it('should have a title of Sign Up', () => {
@@ -37,5 +38,10 @@ describe('sign up', () => {
     render(<SignUp />);
 
     expect(passwordField()).toBeInTheDocument();
+  });
+  it('should disable the submit button when no data has been entered', () => {
+    render(<SignUp />);
+
+    expect(submitButton()).toBeDisabled();
   });
 });

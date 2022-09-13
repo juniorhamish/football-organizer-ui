@@ -51,7 +51,9 @@ export default function SignUp() {
         </CardContent>
         <CardActions>
           <FormControl>
-            <Button type="submit">Submit</Button>
+            <Button type="submit" disabled>
+              Submit
+            </Button>
           </FormControl>
         </CardActions>
       </Card>
