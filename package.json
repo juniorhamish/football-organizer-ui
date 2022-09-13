@@ -11,7 +11,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^29.0.1",
-    "@types/node": "^18.7.15",
+    "@types/node": "^18.7.17",
     "@types/react": "^18.0.19",
     "@types/react-dom": "^18.0.6",
     "amazon-cognito-identity-js": "^5.2.10",
@@ -72,7 +72,7 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prettier": "^4.2.1",
-    "eslint-plugin-react": "^7.31.7",
+    "eslint-plugin-react": "^7.31.8",
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^2.7.1",
     "react-scripts": "5.0.1"
