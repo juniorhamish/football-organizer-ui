@@ -12,14 +12,14 @@
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^29.0.1",
     "@types/node": "^18.7.15",
-    "@types/react": "^18.0.18",
+    "@types/react": "^18.0.19",
     "@types/react-dom": "^18.0.6",
     "amazon-cognito-identity-js": "^5.2.10",
     "aws-amplify": "^4.3.34",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
-    "typescript": "^4.8.2",
+    "typescript": "^4.8.3",
     "web-vitals": "^3.0.1"
   },
   "scripts": {
