@@ -11,20 +11,19 @@ import SignUp from './auth/SignUp';
 export default function FootballOrganizer() {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState<User>();
+  const [currentUserCheckComplete, setCurrentUserCheckComplete] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const accountMenuAnchor = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     Auth.currentAuthenticatedUser()
       .then((user) => setCurrentUser(user))
-      .catch(() => setCurrentUser(undefined));
+      .catch(() => {})
+      .finally(() => setCurrentUserCheckComplete(true));
   }, []);
 
-  const logOut = () => {
-    Auth.signOut().then(() => {
-      setCurrentUser(undefined);
-    });
-  };
+  const logOut = () => Auth.signOut().then(() => setCurrentUser(undefined));
+
   const onLogin = (user: User) => {
     setCurrentUser(user);
     navigate('/', { replace: true });
@@ -39,12 +38,12 @@ export default function FootballOrganizer() {
               Football Organizer
             </Link>
           </Typography>
-          {!currentUser && (
+          {currentUserCheckComplete && !currentUser && (
             <Link component={RouterLink} to="/login">
               <Button color="secondary">Sign in</Button>
             </Link>
           )}
-          {!currentUser && (
+          {currentUserCheckComplete && !currentUser && (
             <Link component={RouterLink} to="/signup">
               <Button color="secondary">Sign up</Button>
             </Link>
