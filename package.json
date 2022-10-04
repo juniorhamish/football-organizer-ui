@@ -18,7 +18,7 @@
     "aws-amplify": "^4.3.35",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.3.0",
+    "react-router-dom": "^6.4.1",
     "typescript": "^4.8.4",
     "web-vitals": "^3.0.2"
   },
@@ -62,7 +62,7 @@
     ]
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.37.0",
+    "@typescript-eslint/eslint-plugin": "^5.39.0",
     "@typescript-eslint/parser": "^5.38.1",
     "eslint": "8.23.1",
     "eslint-config-airbnb": "^19.0.4",
