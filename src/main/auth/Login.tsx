@@ -1,5 +1,5 @@
 import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, Grid, InputLabel } from '@mui/material';
-import { SyntheticEvent, useId, useState } from 'react';
+import { SyntheticEvent, useCallback, useId, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { User } from './User';
 import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
@@ -13,14 +13,17 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
   const [loginInProgress, setLoginInProgress] = useState(false);
   const errorMessageFieldId = `${baseId}ErrorMessageField`;
 
-  const login = (event: SyntheticEvent) => {
-    event.preventDefault();
-    setLoginInProgress(true);
-    Auth.signIn(username, password)
-      .then((user) => onLogin(user))
-      .catch(() => setShowLoginFailedMessage(true))
-      .finally(() => setLoginInProgress(false));
-  };
+  const login = useCallback(
+    (event: SyntheticEvent) => {
+      event.preventDefault();
+      setLoginInProgress(true);
+      Auth.signIn(username, password)
+        .then((user) => onLogin(user))
+        .catch(() => setShowLoginFailedMessage(true))
+        .finally(() => setLoginInProgress(false));
+    },
+    [onLogin, username, password]
+  );
   return (
     <>
       <Backdrop open={loginInProgress} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
