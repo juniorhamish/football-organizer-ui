@@ -37,7 +37,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     - name: Deploy Docker image to Heroku
       if: ${{ github.ref == 'refs/heads/main' }}
-      uses: gonuit/heroku-docker-deploy@v1.3.3
+      uses: gonuit/heroku-docker-deploy@v1.4.0
       with:
         email: ${{ secrets.HEROKU_EMAIL }}
         heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
