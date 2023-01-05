@@ -56,7 +56,7 @@ export default function PasswordField({ id, name, error, onChange, inputProps, a
 PasswordField.defaultProps = {
   error: false,
   inputProps: {},
-  onChange: () => {},
+  onChange: undefined,
   autoComplete: 'password',
   name: undefined,
 };
