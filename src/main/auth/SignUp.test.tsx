@@ -9,6 +9,14 @@ const lastNameField = () => screen.getByRole('textbox', { name: 'Last Name' });
 const passwordField = () => screen.getByLabelText('Password *');
 const submitButton = () => screen.getByRole('button', { name: 'Submit' });
 
+const fillInAllFields = async () => {
+  await userEvent.type(firstNameField(), 'Joe');
+  await userEvent.type(lastNameField(), 'Bloggs');
+  await userEvent.type(usernameField(), 'jbloggs');
+  await userEvent.type(emailAddressField(), 'joe.bloggs@email.com');
+  await userEvent.type(passwordField(), 'SecretPassword');
+};
+
 describe('sign up', () => {
   it('should have a title of Sign Up', () => {
     render(<SignUp />);
@@ -48,12 +56,48 @@ describe('sign up', () => {
   it('should enable the submit button when all fields are filled', async () => {
     render(<SignUp />);
 
-    await userEvent.type(firstNameField(), 'Joe');
-    await userEvent.type(lastNameField(), 'Bloggs');
-    await userEvent.type(usernameField(), 'jbloggs');
-    await userEvent.type(emailAddressField(), 'joe.bloggs@email.com');
-    await userEvent.type(passwordField(), 'SecretPassword');
+    await fillInAllFields();
 
     expect(submitButton()).toBeEnabled();
+  });
+  it('should disable the submit button when the first name field is emptied', async () => {
+    render(<SignUp />);
+    await fillInAllFields();
+
+    await userEvent.clear(firstNameField());
+
+    expect(submitButton()).toBeDisabled();
+  });
+  it('should disable the submit button when the last name field is emptied', async () => {
+    render(<SignUp />);
+    await fillInAllFields();
+
+    await userEvent.clear(lastNameField());
+
+    expect(submitButton()).toBeDisabled();
+  });
+  it('should disable the submit button when the username field is emptied', async () => {
+    render(<SignUp />);
+    await fillInAllFields();
+
+    await userEvent.clear(usernameField());
+
+    expect(submitButton()).toBeDisabled();
+  });
+  it('should disable the submit button when the email address field is emptied', async () => {
+    render(<SignUp />);
+    await fillInAllFields();
+
+    await userEvent.clear(emailAddressField());
+
+    expect(submitButton()).toBeDisabled();
+  });
+  it('should disable the submit button when the password field is emptied', async () => {
+    render(<SignUp />);
+    await fillInAllFields();
+
+    await userEvent.clear(passwordField());
+
+    expect(submitButton()).toBeDisabled();
   });
 });
