@@ -8,7 +8,7 @@ type PasswordFieldProps = {
   id: string;
   name?: string;
   error?: boolean;
-  onChange?: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  onChange: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
   inputProps?: InputBaseComponentProps;
   autoComplete?: string;
 };
@@ -20,9 +20,7 @@ export default function PasswordField({ id, name, error, onChange, inputProps, a
   const passwordChangeHandler = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
       setPassword(event.target.value);
-      if (onChange) {
-        onChange(event);
-      }
+      onChange(event);
     },
     [setPassword, onChange]
   );
@@ -56,7 +54,6 @@ export default function PasswordField({ id, name, error, onChange, inputProps, a
 PasswordField.defaultProps = {
   error: false,
   inputProps: {},
-  onChange: undefined,
   autoComplete: 'password',
   name: undefined,
 };
