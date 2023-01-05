@@ -1,90 +1,87 @@
-import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, IconButton, InputAdornment, TextField } from '@mui/material';
-import { SyntheticEvent, useId, useState } from 'react';
+import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, Grid, InputLabel } from '@mui/material';
+import { SyntheticEvent, useCallback, useId, useState } from 'react';
 import { Auth } from 'aws-amplify';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { User } from './User';
-
-const formFieldStyle = { padding: 1 };
-const textFieldStyle = {
-  boxShadow: 8,
-  borderRadius: 1,
-};
+import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
+import PasswordField from '../components/PasswordField';
 
 export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
   const baseId = useId();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
   const [showLoginFailedMessage, setShowLoginFailedMessage] = useState(false);
   const [loginInProgress, setLoginInProgress] = useState(false);
   const errorMessageFieldId = `${baseId}ErrorMessageField`;
 
-  const login = (event: SyntheticEvent) => {
-    event.preventDefault();
-    setLoginInProgress(true);
-    Auth.signIn(username, password)
-      .then((user) => onLogin(user))
-      .catch(() => setShowLoginFailedMessage(true))
-      .finally(() => setLoginInProgress(false));
-  };
+  const login = useCallback(
+    async (event: SyntheticEvent) => {
+      event.preventDefault();
+      setLoginInProgress(true);
+      try {
+        onLogin(await Auth.signIn(username, password));
+      } catch (e) {
+        setShowLoginFailedMessage(true);
+      } finally {
+        setLoginInProgress(false);
+      }
+    },
+    [onLogin, username, password]
+  );
   return (
     <>
       <Backdrop open={loginInProgress} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <CircularProgress aria-label="Login in progress" />
       </Backdrop>
       <Container maxWidth="sm">
-        <Card raised>
+        <Card raised component="form" onSubmit={login} aria-label="Sign In Form" aria-busy={loginInProgress}>
           <CardHeader title="Sign In" />
-          <form onSubmit={login} aria-label="Sign In Form" aria-busy={loginInProgress}>
-            <CardContent>
-              <FormControl fullWidth sx={formFieldStyle}>
-                <TextField
-                  error={showLoginFailedMessage}
-                  inputProps={showLoginFailedMessage ? { 'aria-errormessage': errorMessageFieldId } : {}}
-                  label="Username"
-                  value={username}
-                  sx={textFieldStyle}
-                  onChange={(event) => {
-                    setShowLoginFailedMessage(false);
-                    setUsername(event.target.value);
-                  }}
-                />
-              </FormControl>
-              <FormControl fullWidth sx={formFieldStyle}>
-                <TextField
-                  label="Password"
-                  error={showLoginFailedMessage}
-                  value={password}
-                  type={passwordVisible ? 'text' : 'password'}
-                  sx={textFieldStyle}
-                  onChange={(event) => {
-                    setShowLoginFailedMessage(false);
-                    setPassword(event.target.value);
-                  }}
-                  InputProps={{
-                    inputProps: showLoginFailedMessage ? { 'aria-errormessage': errorMessageFieldId } : {},
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton aria-label={`${passwordVisible ? 'Hide' : 'Show'} Password`} onClick={() => setPasswordVisible(!passwordVisible)}>
-                          {passwordVisible ? <VisibilityOff /> : <Visibility />}
-                        </IconButton>
-                      </InputAdornment>
-                    ),
-                  }}
-                />
-              </FormControl>
+          <CardContent>
+            <Grid container spacing={1}>
+              <Grid item xs={12}>
+                <FormControl fullWidth margin="dense">
+                  <InputLabel htmlFor="username-field">Username</InputLabel>
+                  <BoxShadowOutlinedInput
+                    id="username-field"
+                    label="Username"
+                    autoComplete="username"
+                    value={username}
+                    error={showLoginFailedMessage}
+                    onChange={(event) => {
+                      setShowLoginFailedMessage(false);
+                      setUsername(event.target.value);
+                    }}
+                    inputProps={showLoginFailedMessage ? { 'aria-errormessage': errorMessageFieldId } : {}}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12}>
+                <FormControl fullWidth margin="dense">
+                  <InputLabel htmlFor="password-field">Password</InputLabel>
+                  <PasswordField
+                    id="password-field"
+                    error={showLoginFailedMessage}
+                    onChange={(event) => {
+                      setShowLoginFailedMessage(false);
+                      setPassword(event.target.value);
+                    }}
+                    inputProps={{ 'aria-errormessage': showLoginFailedMessage ? errorMessageFieldId : undefined }}
+                  />
+                </FormControl>
+              </Grid>
               {showLoginFailedMessage && (
-                <FormHelperText error id={errorMessageFieldId}>
-                  Login failed
-                </FormHelperText>
+                <Grid item xs={12}>
+                  <FormHelperText error id={errorMessageFieldId}>
+                    Login failed
+                  </FormHelperText>
+                </Grid>
               )}
-            </CardContent>
-            <CardActions>
-              <Button type="submit" disabled={!username || !password}>
-                Submit
-              </Button>
-            </CardActions>
-          </form>
+            </Grid>
+          </CardContent>
+          <CardActions>
+            <Button type="submit" disabled={!username || !password}>
+              Submit
+            </Button>
+          </CardActions>
         </Card>
       </Container>
     </>
