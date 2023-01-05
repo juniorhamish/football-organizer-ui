@@ -1,4 +1,4 @@
-import { render, RenderResult, within, screen } from '@testing-library/react';
+import { render, within, screen } from '@testing-library/react';
 import { Auth } from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
@@ -23,9 +23,8 @@ const renderWithRouter = async (component: ReactElement, route = '/') => {
   window.history.pushState({}, 'Home', route);
 
   const user = userEvent.setup();
-  let renderResult = {} as RenderResult;
   await act(async () => {
-    renderResult = render(component, { wrapper: BrowserRouter });
+    render(component, { wrapper: BrowserRouter });
   });
   const banner = () => screen.getByRole('banner');
   const menu = () => screen.getByRole('menu');
@@ -40,7 +39,6 @@ const renderWithRouter = async (component: ReactElement, route = '/') => {
       .getAllByRole('button')
       .map((button) => button.textContent);
   return {
-    ...renderResult,
     user,
     heading,
     signInButton,
@@ -49,7 +47,7 @@ const renderWithRouter = async (component: ReactElement, route = '/') => {
     accountMenuButton,
     myAccountButton,
     bannerButtonNames,
-    ...loginForm(renderResult, user),
+    ...loginForm(user),
   };
 };
 
