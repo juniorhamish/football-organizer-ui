@@ -1,24 +1,22 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Auth } from 'aws-amplify';
-import loginForm from './Login.test.helpers';
 
 import Login from './Login';
 import mocked = jest.mocked;
 import { User } from './User';
+import { enterPassword, enterUsername, hidePasswordButton, passwordField, showPasswordButton, submitButton, submitLogin, usernameField } from './Login.test.helpers';
 
 jest.mock('aws-amplify');
 
 const renderLogin = (onLogin: (user: User) => void = jest.fn()) => {
   render(<Login onLogin={onLogin} />);
-  const user = userEvent.setup();
-  return { user, ...loginForm(user) };
 };
 
 describe('login form', () => {
   it('should call the auth login API on submit', async () => {
     mocked(Auth).signIn.mockImplementation(() => new Promise(jest.fn()));
-    const { submitLogin } = renderLogin();
+    renderLogin();
 
     await submitLogin('MyUsername', 'MyPassword');
 
@@ -28,26 +26,26 @@ describe('login form', () => {
     const onLogin = jest.fn();
     const loggedInUser = {} as User;
     mocked(Auth).signIn.mockResolvedValue(loggedInUser);
-    const { submitLogin } = renderLogin(onLogin);
+    renderLogin(onLogin);
 
     await submitLogin('A', 'A');
 
     expect(onLogin).toHaveBeenCalledWith(loggedInUser);
   });
   it('should show password when clicking the reveal button', async () => {
-    const { user, passwordField, enterPassword, showPasswordButton } = renderLogin();
+    renderLogin();
     await enterPassword('HiddenPassword');
 
-    await user.click(showPasswordButton());
+    await userEvent.click(showPasswordButton());
 
     expect(passwordField()).toHaveAttribute('type', 'text');
   });
   it('should hide password when clicking the un-reveal button', async () => {
-    const { user, enterPassword, showPasswordButton, hidePasswordButton, passwordField } = renderLogin();
+    renderLogin();
     await enterPassword('HiddenPassword');
-    await user.click(showPasswordButton());
+    await userEvent.click(showPasswordButton());
 
-    await user.click(hidePasswordButton());
+    await userEvent.click(hidePasswordButton());
 
     expect(passwordField()).toHaveAttribute('type', 'password');
   });
@@ -57,15 +55,15 @@ describe('login form', () => {
     expect(screen.getByTestId('VisibilityIcon')).toBeInTheDocument();
   });
   it('should show the visibility off icon when the password is shown', async () => {
-    const { user, showPasswordButton } = renderLogin();
+    renderLogin();
 
-    await user.click(showPasswordButton());
+    await userEvent.click(showPasswordButton());
 
     expect(screen.getByTestId('VisibilityOffIcon')).toBeInTheDocument();
   });
   it('should show the failure message if login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { submitLogin } = renderLogin();
+    renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
@@ -78,7 +76,7 @@ describe('login form', () => {
   });
   it('should mark the username field as invalid if login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { submitLogin, usernameField } = renderLogin();
+    renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
@@ -86,14 +84,14 @@ describe('login form', () => {
   });
   it('should not mark the username field as invalid by default', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { usernameField } = renderLogin();
+    renderLogin();
 
     expect(usernameField()).not.toHaveAttribute('aria-invalid', 'true');
     expect(usernameField()).not.toHaveAttribute('aria-errormessage');
   });
   it('should show the username field as valid again when it is subsequently modified', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { enterUsername, submitLogin, usernameField } = renderLogin();
+    renderLogin();
     await submitLogin('Foo', 'Bar');
 
     await enterUsername('A');
@@ -103,7 +101,7 @@ describe('login form', () => {
   });
   it('should hide the login failed message when the username field is subsequently edited', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { submitLogin, enterUsername } = renderLogin();
+    renderLogin();
     await submitLogin('Foo', 'Bar');
 
     await enterUsername('A');
@@ -112,7 +110,7 @@ describe('login form', () => {
   });
   it('should mark the password field as invalid if login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { submitLogin, passwordField } = renderLogin();
+    renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
@@ -120,14 +118,14 @@ describe('login form', () => {
   });
   it('should not mark the password field as invalid by default', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { passwordField } = renderLogin();
+    renderLogin();
 
     expect(passwordField()).not.toHaveAttribute('aria-invalid', 'true');
     expect(passwordField()).not.toHaveAttribute('aria-errormessage');
   });
   it('should show the password field as valid again when it is subsequently modified', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { enterPassword, submitLogin, passwordField } = renderLogin();
+    renderLogin();
     await submitLogin('Foo', 'Bar');
 
     await enterPassword('A');
@@ -137,7 +135,7 @@ describe('login form', () => {
   });
   it('should hide the login failed message when the password field is subsequently edited', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { submitLogin, enterPassword } = renderLogin();
+    renderLogin();
     await submitLogin('Foo', 'Bar');
 
     await enterPassword('A');
@@ -146,7 +144,7 @@ describe('login form', () => {
   });
   it('should show a progress mask when login is in progress', async () => {
     mocked(Auth).signIn.mockImplementation(() => new Promise(jest.fn()));
-    const { submitLogin } = renderLogin();
+    renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
@@ -154,7 +152,7 @@ describe('login form', () => {
   });
   it('should mark the sign in form as busy when login is in progress', async () => {
     mocked(Auth).signIn.mockImplementation(() => new Promise(jest.fn()));
-    const { submitLogin } = renderLogin();
+    renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
@@ -162,7 +160,7 @@ describe('login form', () => {
   });
   it('should hide the progress mask when login succeeds', async () => {
     mocked(Auth).signIn.mockResolvedValue({});
-    const { submitLogin } = renderLogin();
+    renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
@@ -170,7 +168,7 @@ describe('login form', () => {
   });
   it('should remove the busy marker from the sign in form when login succeeds', async () => {
     mocked(Auth).signIn.mockResolvedValue({});
-    const { submitLogin } = renderLogin();
+    renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
@@ -178,7 +176,7 @@ describe('login form', () => {
   });
   it('should hide the progress mask when login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { submitLogin } = renderLogin();
+    renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
@@ -186,28 +184,28 @@ describe('login form', () => {
   });
   it('should remove the busy marker from the sign in form when login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { submitLogin } = renderLogin();
+    renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
     expect(screen.getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
   });
   it('should disable the submit button when no password is entered', async () => {
-    const { enterUsername, submitButton } = renderLogin();
+    renderLogin();
 
     await enterUsername('MyUsername');
 
     expect(submitButton()).toBeDisabled();
   });
   it('should disable the submit button when no username is entered', async () => {
-    const { enterPassword, submitButton } = renderLogin();
+    renderLogin();
 
     await enterPassword('MyPassword');
 
     expect(submitButton()).toBeDisabled();
   });
   it('should disable the submit button when no values are entered', async () => {
-    const { submitButton } = renderLogin();
+    renderLogin();
 
     expect(submitButton()).toBeDisabled();
   });
