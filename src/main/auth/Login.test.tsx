@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Auth } from 'aws-amplify';
 import loginForm from './Login.test.helpers';
@@ -10,9 +10,9 @@ import { User } from './User';
 jest.mock('aws-amplify');
 
 const renderLogin = (onLogin: (user: User) => void = jest.fn()) => {
-  const renderResult = render(<Login onLogin={onLogin} />);
+  render(<Login onLogin={onLogin} />);
   const user = userEvent.setup();
-  return { ...renderResult, user, ...loginForm(renderResult, user) };
+  return { user, ...loginForm(user) };
 };
 
 describe('login form', () => {
@@ -52,29 +52,29 @@ describe('login form', () => {
     expect(passwordField()).toHaveAttribute('type', 'password');
   });
   it('should show the visibility icon when the password is hidden', () => {
-    const { getByTestId } = renderLogin();
+    renderLogin();
 
-    expect(getByTestId('VisibilityIcon')).toBeInTheDocument();
+    expect(screen.getByTestId('VisibilityIcon')).toBeInTheDocument();
   });
   it('should show the visibility off icon when the password is shown', async () => {
-    const { user, getByTestId, showPasswordButton } = renderLogin();
+    const { user, showPasswordButton } = renderLogin();
 
     await user.click(showPasswordButton());
 
-    expect(getByTestId('VisibilityOffIcon')).toBeInTheDocument();
+    expect(screen.getByTestId('VisibilityOffIcon')).toBeInTheDocument();
   });
   it('should show the failure message if login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { getByText, submitLogin } = renderLogin();
+    const { submitLogin } = renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
-    expect(getByText('Login failed')).toBeInTheDocument();
+    expect(screen.getByText('Login failed')).toBeInTheDocument();
   });
   it('should not show the login failed message by default', () => {
-    const { queryByText } = renderLogin();
+    renderLogin();
 
-    expect(queryByText('Login failed')).not.toBeInTheDocument();
+    expect(screen.queryByText('Login failed')).not.toBeInTheDocument();
   });
   it('should mark the username field as invalid if login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
@@ -103,12 +103,12 @@ describe('login form', () => {
   });
   it('should hide the login failed message when the username field is subsequently edited', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { queryByText, submitLogin, enterUsername } = renderLogin();
+    const { submitLogin, enterUsername } = renderLogin();
     await submitLogin('Foo', 'Bar');
 
     await enterUsername('A');
 
-    expect(queryByText('Login failed')).not.toBeInTheDocument();
+    expect(screen.queryByText('Login failed')).not.toBeInTheDocument();
   });
   it('should mark the password field as invalid if login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
@@ -137,60 +137,60 @@ describe('login form', () => {
   });
   it('should hide the login failed message when the password field is subsequently edited', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { queryByText, submitLogin, enterPassword } = renderLogin();
+    const { submitLogin, enterPassword } = renderLogin();
     await submitLogin('Foo', 'Bar');
 
     await enterPassword('A');
 
-    expect(queryByText('Login failed')).not.toBeInTheDocument();
+    expect(screen.queryByText('Login failed')).not.toBeInTheDocument();
   });
   it('should show a progress mask when login is in progress', async () => {
     mocked(Auth).signIn.mockImplementation(() => new Promise(jest.fn()));
-    const { submitLogin, getByLabelText } = renderLogin();
+    const { submitLogin } = renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
-    expect(getByLabelText('Login in progress')).toBeVisible();
+    expect(screen.getByLabelText('Login in progress')).toBeVisible();
   });
   it('should mark the sign in form as busy when login is in progress', async () => {
     mocked(Auth).signIn.mockImplementation(() => new Promise(jest.fn()));
-    const { submitLogin, getByLabelText } = renderLogin();
+    const { submitLogin } = renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
-    expect(getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'true');
+    expect(screen.getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'true');
   });
   it('should hide the progress mask when login succeeds', async () => {
     mocked(Auth).signIn.mockResolvedValue({});
-    const { submitLogin, getByLabelText } = renderLogin();
+    const { submitLogin } = renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
-    expect(getByLabelText('Login in progress')).not.toBeVisible();
+    expect(screen.getByLabelText('Login in progress')).not.toBeVisible();
   });
   it('should remove the busy marker from the sign in form when login succeeds', async () => {
     mocked(Auth).signIn.mockResolvedValue({});
-    const { submitLogin, getByLabelText } = renderLogin();
+    const { submitLogin } = renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
-    expect(getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
+    expect(screen.getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
   });
   it('should hide the progress mask when login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { submitLogin, getByLabelText } = renderLogin();
+    const { submitLogin } = renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
-    expect(getByLabelText('Login in progress')).not.toBeVisible();
+    expect(screen.getByLabelText('Login in progress')).not.toBeVisible();
   });
   it('should remove the busy marker from the sign in form when login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
-    const { submitLogin, getByLabelText } = renderLogin();
+    const { submitLogin } = renderLogin();
 
     await submitLogin('Foo', 'Bar');
 
-    expect(getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
+    expect(screen.getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
   });
   it('should disable the submit button when no password is entered', async () => {
     const { enterUsername, submitButton } = renderLogin();
