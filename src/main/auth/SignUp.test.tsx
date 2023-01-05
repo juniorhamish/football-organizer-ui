@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import SignUp from './SignUp';
 
 const usernameField = () => screen.getByRole('textbox', { name: 'Username' });
@@ -43,5 +44,16 @@ describe('sign up', () => {
     render(<SignUp />);
 
     expect(submitButton()).toBeDisabled();
+  });
+  it('should enable the submit button when all fields are filled', async () => {
+    render(<SignUp />);
+
+    await userEvent.type(firstNameField(), 'Joe');
+    await userEvent.type(lastNameField(), 'Bloggs');
+    await userEvent.type(usernameField(), 'jbloggs');
+    await userEvent.type(emailAddressField(), 'joe.bloggs@email.com');
+    await userEvent.type(passwordField(), 'SecretPassword');
+
+    expect(submitButton()).toBeEnabled();
   });
 });

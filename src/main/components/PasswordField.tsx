@@ -6,13 +6,14 @@ import BoxShadowOutlinedInput from './BoxShadowOutlinedInput';
 
 type PasswordFieldProps = {
   id: string;
+  name?: string;
   error?: boolean;
   onChange?: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
   inputProps?: InputBaseComponentProps;
   autoComplete?: string;
 };
 
-export default function PasswordField({ id, error, onChange, inputProps, autoComplete }: PasswordFieldProps) {
+export default function PasswordField({ id, name, error, onChange, inputProps, autoComplete }: PasswordFieldProps) {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -33,6 +34,7 @@ export default function PasswordField({ id, error, onChange, inputProps, autoCom
   return (
     <BoxShadowOutlinedInput
       id={id}
+      name={name}
       label="Password"
       error={error}
       value={password}
@@ -56,4 +58,5 @@ PasswordField.defaultProps = {
   inputProps: {},
   onChange: () => {},
   autoComplete: 'password',
+  name: undefined,
 };
