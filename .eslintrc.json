@@ -11,7 +11,9 @@
         "airbnb",
         "airbnb-typescript",
         "plugin:jest/recommended",
-        "plugin:prettier/recommended"
+        "plugin:prettier/recommended",
+        "plugin:jest-dom/recommended",
+        "plugin:testing-library/react"
     ],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {

@@ -1,9 +1,8 @@
-import { RenderResult, within } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import { UserEvent } from '@testing-library/user-event/setup/setup';
 
-export default (renderResult: RenderResult, user: UserEvent) => {
-  const { getByRole } = renderResult;
-  const signInForm = () => getByRole('form', { name: 'Sign In Form' });
+export default (user: UserEvent) => {
+  const signInForm = () => screen.getByRole('form', { name: 'Sign In Form' });
   const usernameField = () => within(signInForm()).getByRole('textbox', { name: 'Username' });
   const passwordField = () => within(signInForm()).getByLabelText('Password');
   const submitButton = () => within(signInForm()).getByRole('button', { name: 'Submit' });
