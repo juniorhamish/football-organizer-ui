@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
 import FootballOrganizer from './FootballOrganizer';
-import { submitLogin } from './auth/Login.test.helpers';
+import { signInForm, submitLogin } from './auth/Login.test.helpers';
 import mocked = jest.mocked;
 
 jest.mock('aws-amplify');
@@ -163,6 +163,13 @@ describe('football organizer', () => {
       await waitFor(() => {
         expect(screen.queryByRole('form', { name: 'Sign In Form' })).not.toBeInTheDocument();
       });
+    });
+    it('should show the sign in form when sign in is clicked', async () => {
+      await renderWithRouter(<FootballOrganizer />);
+
+      await userEvent.click(signInButton());
+
+      expect(signInForm()).toBeInTheDocument();
     });
     it('should show the sign up form when sign up is clicked', async () => {
       await renderWithRouter(<FootballOrganizer />);
