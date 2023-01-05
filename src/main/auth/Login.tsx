@@ -14,13 +14,16 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
   const errorMessageFieldId = `${baseId}ErrorMessageField`;
 
   const login = useCallback(
-    (event: SyntheticEvent) => {
+    async (event: SyntheticEvent) => {
       event.preventDefault();
       setLoginInProgress(true);
-      Auth.signIn(username, password)
-        .then((user) => onLogin(user))
-        .catch(() => setShowLoginFailedMessage(true))
-        .finally(() => setLoginInProgress(false));
+      try {
+        onLogin(await Auth.signIn(username, password));
+      } catch (e) {
+        setShowLoginFailedMessage(true);
+      } finally {
+        setLoginInProgress(false);
+      }
     },
     [onLogin, username, password]
   );

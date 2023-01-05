@@ -1,6 +1,6 @@
 import { IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { ChangeEventHandler, useState } from 'react';
+import { ChangeEvent, ChangeEventHandler, useCallback, useState } from 'react';
 import { InputBaseComponentProps } from '@mui/material/InputBase/InputBase';
 import BoxShadowOutlinedInput from './BoxShadowOutlinedInput';
 
@@ -16,6 +16,20 @@ export default function PasswordField({ id, error, onChange, inputProps, autoCom
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
+  const passwordChangeHandler = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
+      setPassword(event.target.value);
+      if (onChange) {
+        onChange(event);
+      }
+    },
+    [setPassword, onChange]
+  );
+
+  const showPasswordClickHandler = useCallback(() => {
+    setPasswordVisible(!passwordVisible);
+  }, [passwordVisible]);
+
   return (
     <BoxShadowOutlinedInput
       id={id}
@@ -24,16 +38,11 @@ export default function PasswordField({ id, error, onChange, inputProps, autoCom
       value={password}
       type={passwordVisible ? 'text' : 'password'}
       autoComplete={autoComplete}
-      onChange={(event) => {
-        setPassword(event.target.value);
-        if (onChange) {
-          onChange(event);
-        }
-      }}
+      onChange={passwordChangeHandler}
       inputProps={inputProps}
       endAdornment={
         <InputAdornment position="end">
-          <IconButton aria-label={`${passwordVisible ? 'Hide' : 'Show'} Password`} onClick={() => setPasswordVisible(!passwordVisible)}>
+          <IconButton aria-label={`${passwordVisible ? 'Hide' : 'Show'} Password`} onClick={showPasswordClickHandler}>
             {passwordVisible ? <VisibilityOff /> : <Visibility />}
           </IconButton>
         </InputAdornment>
