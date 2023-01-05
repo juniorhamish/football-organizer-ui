@@ -164,6 +164,15 @@ describe('football organizer', () => {
         expect(screen.queryByRole('form', { name: 'Sign In Form' })).not.toBeInTheDocument();
       });
     });
+    it('should redirect to the homepage when navigating to the sign up page and already authenticated', async () => {
+      setLoggedInUser();
+
+      await renderWithRouter(<FootballOrganizer />, '/signup');
+
+      await waitFor(() => {
+        expect(screen.queryByRole('form', { name: 'Sign Up Form' })).not.toBeInTheDocument();
+      });
+    });
     it('should show the sign in form when sign in is clicked', async () => {
       await renderWithRouter(<FootballOrganizer />);
 

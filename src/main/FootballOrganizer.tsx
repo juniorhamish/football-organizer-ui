@@ -117,7 +117,7 @@ export default function FootballOrganizer() {
       <Routes>
         <Route path="/" element={<div />} />
         <Route path="/login" element={!currentUser ? <Login onLogin={onLogin} /> : <Navigate to="/" replace />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/signup" element={!currentUser ? <SignUp /> : <Navigate to="/" replace />} />
       </Routes>
     </div>
   );
