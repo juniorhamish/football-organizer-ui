@@ -14,9 +14,13 @@ export default function FootballOrganizer() {
   const accountMenuAnchor = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    Auth.currentAuthenticatedUser()
-      .then((user) => setCurrentUser(user))
-      .catch(() => setCurrentUser(undefined));
+    (async () => {
+      try {
+        setCurrentUser(await Auth.currentAuthenticatedUser());
+      } catch (e) {
+        setCurrentUser(undefined);
+      }
+    })();
   }, []);
 
   const logOut = () => {

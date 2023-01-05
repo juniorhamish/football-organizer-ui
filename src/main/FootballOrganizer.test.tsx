@@ -1,9 +1,8 @@
-import { render, within, screen } from '@testing-library/react';
+import { render, within, screen, waitFor } from '@testing-library/react';
 import { Auth } from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
-import { act } from 'react-dom/test-utils';
 import FootballOrganizer from './FootballOrganizer';
 import loginForm from './auth/Login.test.helpers';
 import mocked = jest.mocked;
@@ -23,15 +22,13 @@ const renderWithRouter = async (component: ReactElement, route = '/') => {
   window.history.pushState({}, 'Home', route);
 
   const user = userEvent.setup();
-  await act(async () => {
-    render(component, { wrapper: BrowserRouter });
-  });
+  await render(component, { wrapper: BrowserRouter });
   const banner = () => screen.getByRole('banner');
   const menu = () => screen.getByRole('menu');
   const heading = () => within(within(banner()).getByRole('heading')).getByRole('link');
   const signInButton = () => within(banner()).getByRole('button', { name: 'Sign in' });
   const signUpButton = () => within(banner()).getByRole('button', { name: 'Sign up' });
-  const accountMenuButton = () => within(banner()).getByRole('button', { name: 'Account' });
+  const accountMenuButton = () => within(banner()).findByRole('button', { name: 'Account' });
   const signOutButton = () => within(menu()).getByRole('menuitem', { name: 'Sign out' });
   const myAccountButton = () => within(menu()).getByRole('menuitem', { name: 'My account' });
   const bannerButtonNames = () =>
@@ -100,7 +97,7 @@ describe('football organizer', () => {
 
           await submitLogin('Foo', 'Bar');
 
-          expect(accountMenuButton()).toBeInTheDocument();
+          expect(await accountMenuButton()).toBeInTheDocument();
         });
       });
     });
@@ -113,25 +110,25 @@ describe('football organizer', () => {
 
         const { accountMenuButton } = await renderWithRouter(<FootballOrganizer />);
 
-        expect(accountMenuButton()).toHaveTextContent('DJ');
+        expect(await accountMenuButton()).toHaveTextContent('DJ');
       });
       it('should have a Sign out button', async () => {
         const { accountMenuButton, signOutButton, user } = await renderWithRouter(<FootballOrganizer />);
 
-        await user.click(accountMenuButton());
+        await user.click(await accountMenuButton());
 
         expect(signOutButton()).toBeInTheDocument();
       });
       it('should have a My account button', async () => {
         const { accountMenuButton, myAccountButton, user } = await renderWithRouter(<FootballOrganizer />);
 
-        await user.click(accountMenuButton());
+        await user.click(await accountMenuButton());
 
         expect(myAccountButton()).toBeInTheDocument();
       });
       it('should close the account menu when pressing escape', async () => {
         const { accountMenuButton, user } = await renderWithRouter(<FootballOrganizer />);
-        await user.click(accountMenuButton());
+        await user.click(await accountMenuButton());
 
         await user.keyboard('{Esc}');
 
@@ -139,19 +136,21 @@ describe('football organizer', () => {
       });
       it('should close the account menu when clicking on it', async () => {
         const { accountMenuButton, user } = await renderWithRouter(<FootballOrganizer />);
-        await user.click(accountMenuButton());
+        await user.click(await accountMenuButton());
 
         await user.click(screen.getByRole('presentation'));
 
         expect(screen.queryByRole('menu')).not.toBeInTheDocument();
       });
       it('should not have a sign in button', async () => {
-        const { bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
+        const { accountMenuButton, bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
+        await accountMenuButton();
 
         expect(bannerButtonNames()).not.toContain('Sign in');
       });
       it('should not have a sign up button', async () => {
-        const { bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
+        const { accountMenuButton, bannerButtonNames } = await renderWithRouter(<FootballOrganizer />);
+        await accountMenuButton();
 
         expect(bannerButtonNames()).not.toContain('Sign up');
       });
@@ -160,7 +159,7 @@ describe('football organizer', () => {
           const { user, signOutButton, signInButton, accountMenuButton } = await renderWithRouter(<FootballOrganizer />);
           mocked(Auth).signOut.mockResolvedValue({});
 
-          await user.click(accountMenuButton());
+          await user.click(await accountMenuButton());
           await user.click(signOutButton());
 
           expect(signInButton()).toBeInTheDocument();
@@ -174,7 +173,9 @@ describe('football organizer', () => {
 
       await renderWithRouter(<FootballOrganizer />, '/login');
 
-      expect(screen.queryByRole('form', { name: 'Sign In Form' })).not.toBeInTheDocument();
+      await waitFor(() => {
+        expect(screen.queryByRole('form', { name: 'Sign In Form' })).not.toBeInTheDocument();
+      });
     });
   });
 });
