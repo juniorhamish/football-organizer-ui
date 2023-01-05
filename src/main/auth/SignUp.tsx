@@ -1,5 +1,6 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Container, FormControl, Grid, InputLabel } from '@mui/material';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, useCallback, useState } from 'react';
+import { Auth } from 'aws-amplify';
 import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import PasswordField from '../components/PasswordField';
 
@@ -39,12 +40,27 @@ export default function SignUp() {
     },
     [setSignUpFormData]
   );
+  const signUp = useCallback(
+    async (event: SyntheticEvent) => {
+      event.preventDefault();
+      await Auth.signUp({
+        username: signUpFormData.username,
+        password: signUpFormData.password,
+        attributes: {
+          email: signUpFormData.emailAddress,
+          given_name: signUpFormData.firstName,
+          family_name: signUpFormData.lastName,
+        },
+      });
+    },
+    [signUpFormData]
+  );
 
   const signUpDataValid = () => !signUpFormData.firstName || !signUpFormData.lastName || !signUpFormData.username || !signUpFormData.emailAddress || !signUpFormData.password;
 
   return (
     <Container maxWidth="sm">
-      <Card raised component="form" aria-label="Sign Up Form">
+      <Card raised component="form" onSubmit={signUp} aria-label="Sign Up Form">
         <CardHeader title="Sign Up" />
         <CardContent>
           <Grid container spacing={1}>
