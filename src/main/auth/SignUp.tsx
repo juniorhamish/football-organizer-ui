@@ -12,16 +12,8 @@ function RequiredSignUpField({ children }: { children: JSX.Element[] }) {
   );
 }
 
-interface SignUpFormData {
-  firstName: string;
-  lastName: string;
-  username: string;
-  emailAddress: string;
-  password: string;
-}
-
 export default function SignUp() {
-  const [signUpFormData, setSignUpFormData] = useState<SignUpFormData>({
+  const [signUpFormData, setSignUpFormData] = useState({
     firstName: '',
     lastName: '',
     username: '',
