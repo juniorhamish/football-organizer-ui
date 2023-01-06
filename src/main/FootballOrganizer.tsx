@@ -1,5 +1,5 @@
 import { AppBar, Avatar, Button, IconButton, Link, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { Link as RouterLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { Logout } from '@mui/icons-material';
@@ -24,15 +24,21 @@ export default function FootballOrganizer() {
     })();
   }, []);
 
-  const logOut = () => {
+  const logOut = useCallback(() => {
     Auth.signOut().then(() => {
       setCurrentUser(undefined);
     });
-  };
-  const onLogin = (user: User) => {
-    setCurrentUser(user);
-    navigate('/', { replace: true });
-  };
+  }, [setCurrentUser]);
+
+  const onLogin = useCallback(
+    (user: User) => {
+      setCurrentUser(user);
+      navigate('/', { replace: true });
+    },
+    [navigate, setCurrentUser]
+  );
+  const openAccountMenu = useCallback(() => setAccountMenuOpen(true), []);
+  const closeAccountMenu = useCallback(() => setAccountMenuOpen(false), []);
 
   return (
     <div>
@@ -57,7 +63,7 @@ export default function FootballOrganizer() {
             <Tooltip title="Account">
               <IconButton
                 ref={accountMenuAnchor}
-                onClick={() => setAccountMenuOpen(true)}
+                onClick={openAccountMenu}
                 aria-haspopup="true"
                 aria-controls={accountMenuOpen ? 'account-menu' : undefined}
                 aria-expanded={accountMenuOpen ? 'true' : undefined}
@@ -71,8 +77,8 @@ export default function FootballOrganizer() {
           id="account-menu"
           open={accountMenuOpen}
           anchorEl={accountMenuAnchor.current}
-          onClose={() => setAccountMenuOpen(false)}
-          onClick={() => setAccountMenuOpen(false)}
+          onClose={closeAccountMenu}
+          onClick={closeAccountMenu}
           PaperProps={{
             elevation: 0,
             sx: {
@@ -106,7 +112,7 @@ export default function FootballOrganizer() {
             <Avatar />
             My account
           </MenuItem>
-          <MenuItem onClick={() => logOut()}>
+          <MenuItem onClick={logOut}>
             <ListItemIcon>
               <Logout fontSize="small" />
             </ListItemIcon>
