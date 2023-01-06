@@ -1,6 +1,10 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Auth } from 'aws-amplify';
 import SignUp from './SignUp';
+import mocked = jest.mocked;
+
+jest.mock('aws-amplify');
 
 const usernameField = () => screen.getByRole('textbox', { name: 'Username' });
 const emailAddressField = () => screen.getByRole('textbox', { name: 'Email Address' });
@@ -9,12 +13,12 @@ const lastNameField = () => screen.getByRole('textbox', { name: 'Last Name' });
 const passwordField = () => screen.getByLabelText('Password *');
 const submitButton = () => screen.getByRole('button', { name: 'Submit' });
 
-const fillInAllFields = async () => {
-  await userEvent.type(firstNameField(), 'Joe');
-  await userEvent.type(lastNameField(), 'Bloggs');
-  await userEvent.type(usernameField(), 'jbloggs');
-  await userEvent.type(emailAddressField(), 'joe.bloggs@email.com');
-  await userEvent.type(passwordField(), 'SecretPassword');
+const fillInAllFields = async ({ firstName = 'Joe', lastName = 'Bloggs', username = 'jbloggs', emailAddress = 'jbloggs@email.com', password = 'SecretPassword' } = {}) => {
+  await userEvent.type(firstNameField(), firstName);
+  await userEvent.type(lastNameField(), lastName);
+  await userEvent.type(usernameField(), username);
+  await userEvent.type(emailAddressField(), emailAddress);
+  await userEvent.type(passwordField(), password);
 };
 
 describe('sign up', () => {
@@ -99,5 +103,28 @@ describe('sign up', () => {
     await userEvent.clear(passwordField());
 
     expect(submitButton()).toBeDisabled();
+  });
+  it('should make sign up API call', async () => {
+    mocked(Auth).signUp.mockImplementation(() => new Promise(jest.fn()));
+    render(<SignUp />);
+    await fillInAllFields({
+      firstName: 'David',
+      lastName: 'Johnston',
+      username: 'djohnston',
+      emailAddress: 'djohnston@email.com',
+      password: 'P@ssword1234',
+    });
+
+    await userEvent.click(submitButton());
+
+    expect(Auth.signUp).toHaveBeenCalledWith({
+      username: 'djohnston',
+      password: 'P@ssword1234',
+      attributes: {
+        email: 'djohnston@email.com',
+        given_name: 'David',
+        family_name: 'Johnston',
+      },
+    });
   });
 });
