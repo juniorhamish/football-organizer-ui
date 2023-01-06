@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Auth } from 'aws-amplify';
 
@@ -67,7 +67,7 @@ describe('login form', () => {
 
     await submitLogin('Foo', 'Bar');
 
-    expect(screen.getByText('Login failed')).toBeInTheDocument();
+    expect(await screen.findByText('Login failed')).toBeInTheDocument();
   });
   it('should not show the login failed message by default', () => {
     renderLogin();
@@ -79,11 +79,11 @@ describe('login form', () => {
     renderLogin();
 
     await submitLogin('Foo', 'Bar');
+    await screen.findByText('Login failed');
 
     expect(usernameField()).toHaveErrorMessage('Login failed');
   });
   it('should not mark the username field as invalid by default', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
     renderLogin();
 
     expect(usernameField()).not.toHaveAttribute('aria-invalid', 'true');
@@ -93,6 +93,7 @@ describe('login form', () => {
     mocked(Auth).signIn.mockRejectedValue({});
     renderLogin();
     await submitLogin('Foo', 'Bar');
+    await screen.findByText('Login failed');
 
     await enterUsername('A');
 
@@ -103,6 +104,7 @@ describe('login form', () => {
     mocked(Auth).signIn.mockRejectedValue({});
     renderLogin();
     await submitLogin('Foo', 'Bar');
+    await screen.findByText('Login failed');
 
     await enterUsername('A');
 
@@ -113,11 +115,11 @@ describe('login form', () => {
     renderLogin();
 
     await submitLogin('Foo', 'Bar');
+    await screen.findByText('Login failed');
 
     expect(passwordField()).toHaveErrorMessage('Login failed');
   });
   it('should not mark the password field as invalid by default', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
     renderLogin();
 
     expect(passwordField()).not.toHaveAttribute('aria-invalid', 'true');
@@ -127,6 +129,7 @@ describe('login form', () => {
     mocked(Auth).signIn.mockRejectedValue({});
     renderLogin();
     await submitLogin('Foo', 'Bar');
+    await screen.findByText('Login failed');
 
     await enterPassword('A');
 
@@ -137,6 +140,7 @@ describe('login form', () => {
     mocked(Auth).signIn.mockRejectedValue({});
     renderLogin();
     await submitLogin('Foo', 'Bar');
+    await screen.findByText('Login failed');
 
     await enterPassword('A');
 
@@ -164,7 +168,9 @@ describe('login form', () => {
 
     await submitLogin('Foo', 'Bar');
 
-    expect(screen.getByLabelText('Login in progress')).not.toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByLabelText('Login in progress')).not.toBeVisible();
+    });
   });
   it('should remove the busy marker from the sign in form when login succeeds', async () => {
     mocked(Auth).signIn.mockResolvedValue({});
@@ -172,7 +178,9 @@ describe('login form', () => {
 
     await submitLogin('Foo', 'Bar');
 
-    expect(screen.getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
+    await waitFor(() => {
+      expect(screen.getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
+    });
   });
   it('should hide the progress mask when login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
@@ -180,7 +188,9 @@ describe('login form', () => {
 
     await submitLogin('Foo', 'Bar');
 
-    expect(screen.getByLabelText('Login in progress')).not.toBeVisible();
+    await waitFor(() => {
+      expect(screen.getByLabelText('Login in progress')).not.toBeVisible();
+    });
   });
   it('should remove the busy marker from the sign in form when login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
@@ -188,7 +198,9 @@ describe('login form', () => {
 
     await submitLogin('Foo', 'Bar');
 
-    expect(screen.getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
+    await waitFor(() => {
+      expect(screen.getByLabelText('Sign In Form')).toHaveAttribute('aria-busy', 'false');
+    });
   });
   it('should disable the submit button when no password is entered', async () => {
     renderLogin();
@@ -208,5 +220,32 @@ describe('login form', () => {
     renderLogin();
 
     expect(submitButton()).toBeDisabled();
+  });
+  it('should disable the submit button while login is in progress', async () => {
+    mocked(Auth).signIn.mockImplementation(jest.fn());
+    renderLogin();
+
+    await submitLogin('Foo', 'Bar');
+
+    expect(submitButton()).toBeDisabled();
+  });
+  it('should re-enable the submit button after login fails', async () => {
+    mocked(Auth).signIn.mockRejectedValue({});
+    renderLogin();
+
+    await submitLogin('Foo', 'Bar');
+    await screen.findByText('Login failed');
+
+    expect(submitButton()).toBeEnabled();
+  });
+  it('should re-enable the submit button after login succeeds', async () => {
+    mocked(Auth).signIn.mockResolvedValue({});
+    renderLogin();
+
+    await submitLogin('Foo', 'Bar');
+
+    await waitFor(() => {
+      expect(submitButton()).toBeEnabled();
+    });
   });
 });

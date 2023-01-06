@@ -1,6 +1,6 @@
 import { IconButton, InputAdornment } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { ChangeEvent, ChangeEventHandler, useCallback, useState } from 'react';
+import { ChangeEvent, ChangeEventHandler, forwardRef, useCallback, useState } from 'react';
 import { InputBaseComponentProps } from '@mui/material/InputBase/InputBase';
 import BoxShadowOutlinedInput from './BoxShadowOutlinedInput';
 
@@ -9,11 +9,12 @@ type PasswordFieldProps = {
   name?: string;
   error?: boolean;
   onChange: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  onBlur?: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
   inputProps?: InputBaseComponentProps;
   autoComplete?: string;
 };
 
-export default function PasswordField({ id, name, error, onChange, inputProps, autoComplete }: PasswordFieldProps) {
+const PasswordField = forwardRef(({ id, name, error, onChange, onBlur, inputProps, autoComplete }: PasswordFieldProps, ref) => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -32,6 +33,7 @@ export default function PasswordField({ id, name, error, onChange, inputProps, a
   return (
     <BoxShadowOutlinedInput
       id={id}
+      ref={ref}
       name={name}
       label="Password"
       error={error}
@@ -39,6 +41,7 @@ export default function PasswordField({ id, name, error, onChange, inputProps, a
       type={passwordVisible ? 'text' : 'password'}
       autoComplete={autoComplete}
       onChange={passwordChangeHandler}
+      onBlur={onBlur}
       inputProps={inputProps}
       endAdornment={
         <InputAdornment position="end">
@@ -49,11 +52,14 @@ export default function PasswordField({ id, name, error, onChange, inputProps, a
       }
     />
   );
-}
+});
 
 PasswordField.defaultProps = {
   error: false,
   inputProps: {},
   autoComplete: 'password',
   name: undefined,
+  onBlur: undefined,
 };
+
+export default PasswordField;

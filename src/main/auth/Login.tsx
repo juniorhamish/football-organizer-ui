@@ -1,54 +1,53 @@
 import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, Grid, InputLabel } from '@mui/material';
-import { ChangeEvent, SyntheticEvent, useCallback, useId, useState } from 'react';
+import { useCallback, useId, useState } from 'react';
 import { Auth } from 'aws-amplify';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { User } from './User';
 import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import PasswordField from '../components/PasswordField';
 
+type LoginInputs = {
+  username: string;
+  password: string;
+};
+
 export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
   const baseId = useId();
-  const [loginFormData, setLoginFormData] = useState({
-    username: '',
-    password: '',
-  });
   const [showLoginFailedMessage, setShowLoginFailedMessage] = useState(false);
-  const [loginInProgress, setLoginInProgress] = useState(false);
   const errorMessageFieldId = `${baseId}ErrorMessageField`;
-
-  const fieldChangeHandler = useCallback(
-    (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-      setShowLoginFailedMessage(false);
-      const fieldName = event.target.name;
-      setLoginFormData((prevState) => {
-        return {
-          ...prevState,
-          [fieldName]: event.target.value,
-        };
-      });
-    },
-    [setLoginFormData, setShowLoginFailedMessage]
-  );
-  const login = useCallback(
-    async (event: SyntheticEvent) => {
-      event.preventDefault();
-      setLoginInProgress(true);
+  const login: SubmitHandler<LoginInputs> = useCallback(
+    async (data) => {
       try {
-        onLogin(await Auth.signIn(loginFormData.username, loginFormData.password));
+        onLogin(await Auth.signIn(data.username, data.password));
       } catch (e) {
         setShowLoginFailedMessage(true);
-      } finally {
-        setLoginInProgress(false);
       }
     },
-    [onLogin, loginFormData]
+    [onLogin]
   );
+  const {
+    register,
+    handleSubmit,
+    formState: { isSubmitting, isValid },
+  } = useForm<LoginInputs>({
+    defaultValues: {
+      username: '',
+      password: '',
+    },
+  });
+  const hideLoginFailedMessage = useCallback(() => {
+    setShowLoginFailedMessage(false);
+  }, [setShowLoginFailedMessage]);
+  const usernameField = register('username', { required: true, onChange: hideLoginFailedMessage });
+  const passwordField = register('password', { required: true, onChange: hideLoginFailedMessage });
+
   return (
     <>
-      <Backdrop open={loginInProgress} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Backdrop open={isSubmitting} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
         <CircularProgress aria-label="Login in progress" />
       </Backdrop>
       <Container maxWidth="sm">
-        <Card raised component="form" onSubmit={login} aria-label="Sign In Form" aria-busy={loginInProgress}>
+        <Card raised component="form" onSubmit={handleSubmit(login)} aria-label="Sign In Form" aria-busy={isSubmitting}>
           <CardHeader title="Sign In" />
           <CardContent>
             <Grid container spacing={1}>
@@ -57,12 +56,13 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
                   <InputLabel htmlFor="username-field">Username</InputLabel>
                   <BoxShadowOutlinedInput
                     id="username-field"
-                    name="username"
+                    name={usernameField.name}
                     label="Username"
                     autoComplete="username"
-                    value={loginFormData.username}
                     error={showLoginFailedMessage}
-                    onChange={fieldChangeHandler}
+                    onChange={usernameField.onChange}
+                    onBlur={usernameField.onBlur}
+                    ref={usernameField.ref}
                     inputProps={showLoginFailedMessage ? { 'aria-errormessage': errorMessageFieldId } : {}}
                   />
                 </FormControl>
@@ -72,9 +72,11 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
                   <InputLabel htmlFor="password-field">Password</InputLabel>
                   <PasswordField
                     id="password-field"
-                    name="password"
+                    name={passwordField.name}
                     error={showLoginFailedMessage}
-                    onChange={fieldChangeHandler}
+                    onChange={passwordField.onChange}
+                    onBlur={passwordField.onBlur}
+                    ref={passwordField.ref}
                     inputProps={{ 'aria-errormessage': showLoginFailedMessage ? errorMessageFieldId : undefined }}
                   />
                 </FormControl>
@@ -89,7 +91,7 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
             </Grid>
           </CardContent>
           <CardActions>
-            <Button type="submit" disabled={!loginFormData.username || !loginFormData.password}>
+            <Button type="submit" disabled={isSubmitting || !isValid}>
               Submit
             </Button>
           </CardActions>
