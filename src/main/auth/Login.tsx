@@ -1,7 +1,8 @@
 import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, Grid, InputLabel } from '@mui/material';
-import { useCallback, useId, useState } from 'react';
+import { useCallback, useId } from 'react';
 import { Auth } from 'aws-amplify';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { ErrorMessage } from '@hookform/error-message';
 import { User } from './User';
 import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import PasswordField from '../components/PasswordField';
@@ -13,33 +14,33 @@ type LoginInputs = {
 
 export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
   const baseId = useId();
-  const [showLoginFailedMessage, setShowLoginFailedMessage] = useState(false);
   const errorMessageFieldId = `${baseId}ErrorMessageField`;
-  const login: SubmitHandler<LoginInputs> = useCallback(
-    async (data) => {
-      try {
-        onLogin(await Auth.signIn(data.username, data.password));
-      } catch (e) {
-        setShowLoginFailedMessage(true);
-      }
-    },
-    [onLogin]
-  );
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting, isValid },
+    setError,
+    reset,
+    formState: { isSubmitting, isValid, errors, isSubmitSuccessful, isSubmitted },
   } = useForm<LoginInputs>({
     defaultValues: {
       username: '',
       password: '',
     },
   });
-  const hideLoginFailedMessage = useCallback(() => {
-    setShowLoginFailedMessage(false);
-  }, [setShowLoginFailedMessage]);
-  const usernameField = register('username', { required: true, onChange: hideLoginFailedMessage });
-  const passwordField = register('password', { required: true, onChange: hideLoginFailedMessage });
+  const highlightFields = () => isSubmitted && !isSubmitSuccessful;
+  const hideErrors = useCallback(() => reset({}, { keepValues: true }), [reset]);
+  const usernameField = register('username', { required: true, onChange: hideErrors });
+  const passwordField = register('password', { required: true, onChange: hideErrors });
+  const login: SubmitHandler<LoginInputs> = useCallback(
+    async (data) => {
+      try {
+        onLogin(await Auth.signIn(data.username, data.password));
+      } catch (e) {
+        setError(passwordField.name, { type: 'custom', message: 'Login failed' });
+      }
+    },
+    [onLogin, setError, passwordField]
+  );
 
   return (
     <>
@@ -59,11 +60,10 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
                     name={usernameField.name}
                     label="Username"
                     autoComplete="username"
-                    error={showLoginFailedMessage}
+                    error={highlightFields()}
                     onChange={usernameField.onChange}
-                    onBlur={usernameField.onBlur}
                     ref={usernameField.ref}
-                    inputProps={showLoginFailedMessage ? { 'aria-errormessage': errorMessageFieldId } : {}}
+                    inputProps={highlightFields() ? { 'aria-errormessage': errorMessageFieldId } : {}}
                   />
                 </FormControl>
               </Grid>
@@ -73,21 +73,24 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
                   <PasswordField
                     id="password-field"
                     name={passwordField.name}
-                    error={showLoginFailedMessage}
+                    error={highlightFields()}
                     onChange={passwordField.onChange}
-                    onBlur={passwordField.onBlur}
                     ref={passwordField.ref}
-                    inputProps={{ 'aria-errormessage': showLoginFailedMessage ? errorMessageFieldId : undefined }}
+                    inputProps={{ 'aria-errormessage': highlightFields() ? errorMessageFieldId : undefined }}
                   />
                 </FormControl>
               </Grid>
-              {showLoginFailedMessage && (
-                <Grid item xs={12}>
-                  <FormHelperText error id={errorMessageFieldId}>
-                    Login failed
-                  </FormHelperText>
-                </Grid>
-              )}
+              <ErrorMessage
+                name={passwordField.name}
+                errors={errors}
+                render={({ message }) => (
+                  <Grid item xs={12}>
+                    <FormHelperText error id={errorMessageFieldId}>
+                      {message}
+                    </FormHelperText>
+                  </Grid>
+                )}
+              />
             </Grid>
           </CardContent>
           <CardActions>

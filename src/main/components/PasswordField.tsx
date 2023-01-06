@@ -9,12 +9,11 @@ type PasswordFieldProps = {
   name?: string;
   error?: boolean;
   onChange: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
-  onBlur?: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
   inputProps?: InputBaseComponentProps;
   autoComplete?: string;
 };
 
-const PasswordField = forwardRef(({ id, name, error, onChange, onBlur, inputProps, autoComplete }: PasswordFieldProps, ref) => {
+const PasswordField = forwardRef(({ id, name, error, onChange, inputProps, autoComplete }: PasswordFieldProps, ref) => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
 
@@ -41,7 +40,6 @@ const PasswordField = forwardRef(({ id, name, error, onChange, onBlur, inputProp
       type={passwordVisible ? 'text' : 'password'}
       autoComplete={autoComplete}
       onChange={passwordChangeHandler}
-      onBlur={onBlur}
       inputProps={inputProps}
       endAdornment={
         <InputAdornment position="end">
@@ -59,7 +57,6 @@ PasswordField.defaultProps = {
   inputProps: {},
   autoComplete: 'password',
   name: undefined,
-  onBlur: undefined,
 };
 
 export default PasswordField;

@@ -229,14 +229,14 @@ describe('login form', () => {
 
     expect(submitButton()).toBeDisabled();
   });
-  it('should re-enable the submit button after login fails', async () => {
+  it('should disable the submit button after login fails', async () => {
     mocked(Auth).signIn.mockRejectedValue({});
     renderLogin();
 
     await submitLogin('Foo', 'Bar');
     await screen.findByText('Login failed');
 
-    expect(submitButton()).toBeEnabled();
+    expect(submitButton()).toBeDisabled();
   });
   it('should re-enable the submit button after login succeeds', async () => {
     mocked(Auth).signIn.mockResolvedValue({});
