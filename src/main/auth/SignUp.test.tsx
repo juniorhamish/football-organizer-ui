@@ -13,7 +13,7 @@ const lastNameField = () => screen.getByRole('textbox', { name: 'Last Name' });
 const passwordField = () => screen.getByLabelText('Password *');
 const submitButton = () => screen.getByRole('button', { name: 'Submit' });
 
-const fillInAllFields = async (firstName: string, lastName: string, username: string, emailAddress: string, password: string) => {
+const fillInAllFields = async ({ firstName = 'Joe', lastName = 'Bloggs', username = 'jbloggs', emailAddress = 'jbloggs@email.com', password = 'SecretPassword' } = {}) => {
   await userEvent.type(firstNameField(), firstName);
   await userEvent.type(lastNameField(), lastName);
   await userEvent.type(usernameField(), username);
@@ -60,13 +60,13 @@ describe('sign up', () => {
   it('should enable the submit button when all fields are filled', async () => {
     render(<SignUp />);
 
-    await fillInAllFields('Joe', 'Bloggs', 'jbloggs', 'jbloggs@email.com', 'SecretPassword');
+    await fillInAllFields();
 
     expect(submitButton()).toBeEnabled();
   });
   it('should disable the submit button when the first name field is emptied', async () => {
     render(<SignUp />);
-    await fillInAllFields('Joe', 'Bloggs', 'jbloggs', 'jbloggs@email.com', 'SecretPassword');
+    await fillInAllFields();
 
     await userEvent.clear(firstNameField());
 
@@ -74,7 +74,7 @@ describe('sign up', () => {
   });
   it('should disable the submit button when the last name field is emptied', async () => {
     render(<SignUp />);
-    await fillInAllFields('Joe', 'Bloggs', 'jbloggs', 'jbloggs@email.com', 'SecretPassword');
+    await fillInAllFields();
 
     await userEvent.clear(lastNameField());
 
@@ -82,7 +82,7 @@ describe('sign up', () => {
   });
   it('should disable the submit button when the username field is emptied', async () => {
     render(<SignUp />);
-    await fillInAllFields('Joe', 'Bloggs', 'jbloggs', 'jbloggs@email.com', 'SecretPassword');
+    await fillInAllFields();
 
     await userEvent.clear(usernameField());
 
@@ -90,7 +90,7 @@ describe('sign up', () => {
   });
   it('should disable the submit button when the email address field is emptied', async () => {
     render(<SignUp />);
-    await fillInAllFields('Joe', 'Bloggs', 'jbloggs', 'jbloggs@email.com', 'SecretPassword');
+    await fillInAllFields();
 
     await userEvent.clear(emailAddressField());
 
@@ -98,7 +98,7 @@ describe('sign up', () => {
   });
   it('should disable the submit button when the password field is emptied', async () => {
     render(<SignUp />);
-    await fillInAllFields('Joe', 'Bloggs', 'jbloggs', 'jbloggs@email.com', 'SecretPassword');
+    await fillInAllFields();
 
     await userEvent.clear(passwordField());
 
@@ -107,7 +107,13 @@ describe('sign up', () => {
   it('should make sign up API call', async () => {
     mocked(Auth).signUp.mockImplementation(() => new Promise(jest.fn()));
     render(<SignUp />);
-    await fillInAllFields('David', 'Johnston', 'djohnston', 'djohnston@email.com', 'P@ssword1234');
+    await fillInAllFields({
+      firstName: 'David',
+      lastName: 'Johnston',
+      username: 'djohnston',
+      emailAddress: 'djohnston@email.com',
+      password: 'P@ssword1234',
+    });
 
     await userEvent.click(submitButton());
 
