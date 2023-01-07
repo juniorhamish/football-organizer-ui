@@ -83,7 +83,6 @@ describe('login form', () => {
     expect(usernameField()).toHaveErrorMessage('Login failed');
   });
   it('should not mark the username field as invalid by default', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
     renderLogin();
 
     expect(usernameField()).not.toHaveAttribute('aria-invalid', 'true');
@@ -117,7 +116,6 @@ describe('login form', () => {
     expect(passwordField()).toHaveErrorMessage('Login failed');
   });
   it('should not mark the password field as invalid by default', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
     renderLogin();
 
     expect(passwordField()).not.toHaveAttribute('aria-invalid', 'true');

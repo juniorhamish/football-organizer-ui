@@ -1,8 +1,9 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Container, FormControl, Grid, InputLabel } from '@mui/material';
-import { ChangeEvent, SyntheticEvent, useCallback, useState } from 'react';
+import { SyntheticEvent, useCallback } from 'react';
 import { Auth } from 'aws-amplify';
 import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import PasswordField from '../components/PasswordField';
+import useFormState from '../functional/useFormState';
 
 function RequiredSignUpField({ children }: { children: JSX.Element[] }) {
   return (
@@ -13,42 +14,33 @@ function RequiredSignUpField({ children }: { children: JSX.Element[] }) {
 }
 
 export default function SignUp() {
-  const [signUpFormData, setSignUpFormData] = useState({
+  const {
+    values: { firstName, lastName, username, emailAddress, password },
+    onChange,
+  } = useFormState({
     firstName: '',
     lastName: '',
     username: '',
     emailAddress: '',
     password: '',
   });
-  const fieldChangeHandler = useCallback(
-    (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-      const fieldName = event.target.name;
-      setSignUpFormData((prevState) => {
-        return {
-          ...prevState,
-          [fieldName]: event.target.value,
-        };
-      });
-    },
-    [setSignUpFormData]
-  );
   const signUp = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
       await Auth.signUp({
-        username: signUpFormData.username,
-        password: signUpFormData.password,
+        username,
+        password,
         attributes: {
-          email: signUpFormData.emailAddress,
-          given_name: signUpFormData.firstName,
-          family_name: signUpFormData.lastName,
+          email: emailAddress,
+          given_name: firstName,
+          family_name: lastName,
         },
       });
     },
-    [signUpFormData]
+    [username, password, emailAddress, firstName, lastName]
   );
 
-  const signUpDataValid = () => !signUpFormData.firstName || !signUpFormData.lastName || !signUpFormData.username || !signUpFormData.emailAddress || !signUpFormData.password;
+  const signUpDataValid = () => !firstName || !lastName || !username || !emailAddress || !password;
 
   return (
     <Container maxWidth="sm">
@@ -59,31 +51,31 @@ export default function SignUp() {
             <Grid item sm={6} xs={12}>
               <RequiredSignUpField>
                 <InputLabel htmlFor="first-name-field">First Name</InputLabel>
-                <BoxShadowOutlinedInput id="first-name-field" name="firstName" label="First Name" autoComplete="given-name" onChange={fieldChangeHandler} />
+                <BoxShadowOutlinedInput id="first-name-field" name="firstName" label="First Name" autoComplete="given-name" onChange={onChange} />
               </RequiredSignUpField>
             </Grid>
             <Grid item sm={6} xs={12}>
               <RequiredSignUpField>
                 <InputLabel htmlFor="last-name-field">Last Name</InputLabel>
-                <BoxShadowOutlinedInput id="last-name-field" name="lastName" label="Last Name" autoComplete="family-name" onChange={fieldChangeHandler} />
+                <BoxShadowOutlinedInput id="last-name-field" name="lastName" label="Last Name" autoComplete="family-name" onChange={onChange} />
               </RequiredSignUpField>
             </Grid>
             <Grid item xs={12}>
               <RequiredSignUpField>
                 <InputLabel htmlFor="username-field">Username</InputLabel>
-                <BoxShadowOutlinedInput id="username-field" name="username" label="Username" autoComplete="username" onChange={fieldChangeHandler} />
+                <BoxShadowOutlinedInput id="username-field" name="username" label="Username" autoComplete="username" onChange={onChange} />
               </RequiredSignUpField>
             </Grid>
             <Grid item xs={12}>
               <RequiredSignUpField>
                 <InputLabel htmlFor="email-address-field">Email Address</InputLabel>
-                <BoxShadowOutlinedInput id="email-address-field" name="emailAddress" label="Email Address" type="email" autoComplete="email" onChange={fieldChangeHandler} />
+                <BoxShadowOutlinedInput id="email-address-field" name="emailAddress" label="Email Address" type="email" autoComplete="email" onChange={onChange} />
               </RequiredSignUpField>
             </Grid>
             <Grid item xs={12}>
               <RequiredSignUpField>
                 <InputLabel htmlFor="password-field">Password</InputLabel>
-                <PasswordField id="password-field" name="password" autoComplete="new-password" onChange={fieldChangeHandler} />
+                <PasswordField id="password-field" name="password" autoComplete="new-password" onChange={onChange} />
               </RequiredSignUpField>
             </Grid>
           </Grid>

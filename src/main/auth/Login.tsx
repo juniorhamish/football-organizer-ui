@@ -1,47 +1,42 @@
 import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, Grid, InputLabel } from '@mui/material';
-import { ChangeEvent, SyntheticEvent, useCallback, useId, useState } from 'react';
+import { SyntheticEvent, useCallback, useId, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { User } from './User';
 import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import PasswordField from '../components/PasswordField';
+import useFormState from '../functional/useFormState';
 
 export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
   const baseId = useId();
-  const [loginFormData, setLoginFormData] = useState({
-    username: '',
-    password: '',
-  });
   const [showLoginFailedMessage, setShowLoginFailedMessage] = useState(false);
   const [loginInProgress, setLoginInProgress] = useState(false);
-  const errorMessageFieldId = `${baseId}ErrorMessageField`;
-
-  const fieldChangeHandler = useCallback(
-    (event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
-      setShowLoginFailedMessage(false);
-      const fieldName = event.target.name;
-      setLoginFormData((prevState) => {
-        return {
-          ...prevState,
-          [fieldName]: event.target.value,
-        };
-      });
+  const hideErrors = () => setShowLoginFailedMessage(false);
+  const {
+    values: { username, password },
+    onChange,
+  } = useFormState(
+    {
+      username: '',
+      password: '',
     },
-    [setLoginFormData, setShowLoginFailedMessage]
+    hideErrors
   );
+  const errorMessageFieldId = `${baseId}ErrorMessageField`;
   const login = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
       setLoginInProgress(true);
       try {
-        onLogin(await Auth.signIn(loginFormData.username, loginFormData.password));
+        onLogin(await Auth.signIn(username, password));
       } catch (e) {
         setShowLoginFailedMessage(true);
       } finally {
         setLoginInProgress(false);
       }
     },
-    [onLogin, loginFormData]
+    [onLogin, username, password]
   );
+
   return (
     <>
       <Backdrop open={loginInProgress} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
@@ -60,9 +55,9 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
                     name="username"
                     label="Username"
                     autoComplete="username"
-                    value={loginFormData.username}
+                    value={username}
                     error={showLoginFailedMessage}
-                    onChange={fieldChangeHandler}
+                    onChange={onChange}
                     inputProps={showLoginFailedMessage ? { 'aria-errormessage': errorMessageFieldId } : {}}
                   />
                 </FormControl>
@@ -74,7 +69,7 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
                     id="password-field"
                     name="password"
                     error={showLoginFailedMessage}
-                    onChange={fieldChangeHandler}
+                    onChange={onChange}
                     inputProps={{ 'aria-errormessage': showLoginFailedMessage ? errorMessageFieldId : undefined }}
                   />
                 </FormControl>
@@ -89,7 +84,7 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
             </Grid>
           </CardContent>
           <CardActions>
-            <Button type="submit" disabled={!loginFormData.username || !loginFormData.password}>
+            <Button type="submit" disabled={!username || !password}>
               Submit
             </Button>
           </CardActions>
