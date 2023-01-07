@@ -41,6 +41,16 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
     },
     [onLogin, setError, passwordField]
   );
+  const renderErrorMessage = useCallback(
+    (data: { message: string }) => (
+      <Grid item xs={12}>
+        <FormHelperText error id={errorMessageFieldId}>
+          {data.message}
+        </FormHelperText>
+      </Grid>
+    ),
+    [errorMessageFieldId]
+  );
 
   return (
     <>
@@ -80,17 +90,7 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
                   />
                 </FormControl>
               </Grid>
-              <ErrorMessage
-                name={passwordField.name}
-                errors={errors}
-                render={({ message }) => (
-                  <Grid item xs={12}>
-                    <FormHelperText error id={errorMessageFieldId}>
-                      {message}
-                    </FormHelperText>
-                  </Grid>
-                )}
-              />
+              <ErrorMessage name={passwordField.name} errors={errors} render={renderErrorMessage} />
             </Grid>
           </CardContent>
           <CardActions>
