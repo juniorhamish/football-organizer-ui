@@ -1,7 +1,6 @@
-import { IconButton, InputAdornment } from '@mui/material';
+import { IconButton, InputAdornment, InputBaseComponentProps } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { ChangeEvent, ChangeEventHandler, useCallback, useState } from 'react';
-import { InputBaseComponentProps } from '@mui/material/InputBase/InputBase';
 import BoxShadowOutlinedInput from './BoxShadowOutlinedInput';
 
 type PasswordFieldProps = {
