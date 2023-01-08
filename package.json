@@ -25,8 +25,8 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test",
-    "test:ci": "react-app-rewired test --coverage --coverageDirectory=coverage --watchAll=false",
+    "test": "react-scripts test",
+    "test:ci": "react-scripts test --coverage --coverageDirectory=coverage --watchAll=false",
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
