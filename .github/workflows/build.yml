@@ -47,13 +47,26 @@ jobs:
       if: ${{ github.ref == 'refs/heads/main' }}
       run: docker push $REPO
   redeploy:
-    name: Redeploy webhook call
+    name: Redeploy on OCI instance
     if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     needs: [ build ]
     steps:
-      - name: Deploy docker container webhook
-        uses: joelwmale/webhook-action@master
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/oci.key
+          chmod 600 ~/.ssh/oci.key
+          cat >>~/.ssh/config <<END
+          Host oci
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/oci.key
+            StrictHostKeyChecking no
+          END
         env:
-          WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL  }}
-          data: "{ 'myField': 'myFieldValue'}"
+          SSH_USER: ${{ secrets.OCI_DEPLOY_USER }}
+          SSH_KEY: ${{ secrets.OCI_SSH_KEY }}
+          SSH_HOST: ${{ secrets.OCI_DEPLOY_HOST }}
+      - name: Execute redeploy command
+        run: ssh oci '/home/docker/redeploy.sh'
