@@ -16,7 +16,7 @@ jobs:
       REPO: ${{ secrets.DOCKER_REPO }}
     strategy:
       matrix:
-        node-version: [19.x]
+        node-version: [17,18,19]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
     - uses: actions/checkout@v3
