@@ -4,23 +4,9 @@ import { Auth } from 'aws-amplify';
 import { ISignUpResult } from 'amazon-cognito-identity-js';
 import SignUp from './SignUp';
 import mocked = jest.mocked;
+import { emailAddressField, fillInAllFields, firstNameField, lastNameField, passwordField, submitButton, usernameField } from './SignUp.test.helpers';
 
 jest.mock('aws-amplify');
-
-const usernameField = () => screen.getByRole('textbox', { name: 'Username' });
-const emailAddressField = () => screen.getByRole('textbox', { name: 'Email Address' });
-const firstNameField = () => screen.getByRole('textbox', { name: 'First Name' });
-const lastNameField = () => screen.getByRole('textbox', { name: 'Last Name' });
-const passwordField = () => screen.getByLabelText('Password *');
-const submitButton = () => screen.getByRole('button', { name: 'Submit' });
-
-const fillInAllFields = async ({ firstName = 'Joe', lastName = 'Bloggs', username = 'jbloggs', emailAddress = 'jbloggs@email.com', password = 'SecretPassword' } = {}) => {
-  await userEvent.type(firstNameField(), firstName);
-  await userEvent.type(lastNameField(), lastName);
-  await userEvent.type(usernameField(), username);
-  await userEvent.type(emailAddressField(), emailAddress);
-  await userEvent.type(passwordField(), password);
-};
 
 const renderSignUp = (onSignUp = () => {}) => render(<SignUp onSignUp={onSignUp} />);
 

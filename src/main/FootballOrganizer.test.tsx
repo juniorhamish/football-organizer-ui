@@ -1,4 +1,5 @@
 import { render, within, screen, waitFor } from '@testing-library/react';
+import { ISignUpResult } from 'amazon-cognito-identity-js';
 import { Auth } from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
@@ -6,6 +7,7 @@ import { ReactElement } from 'react';
 import FootballOrganizer from './FootballOrganizer';
 import { signInForm, submitLogin } from './auth/Login.test.helpers';
 import mocked = jest.mocked;
+import { submitSignUp } from './auth/SignUp.test.helpers';
 
 jest.mock('aws-amplify');
 
@@ -84,6 +86,23 @@ describe('football organizer', () => {
           await submitLogin('Foo', 'Bar');
 
           expect(await accountMenuButton()).toBeInTheDocument();
+        });
+      });
+      describe('sign up', () => {
+        it('should navigate to the confirm sign up page on successful sign up', async () => {
+          renderWithRouter(<FootballOrganizer />);
+          mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
+          await userEvent.click(signUpButton());
+
+          await submitSignUp({
+            firstName: 'Foo',
+            lastName: 'Bar',
+            username: 'foobar',
+            emailAddress: 'foo.bar@email.com',
+            password: 'MyPassword',
+          });
+
+          expect(screen.getByRole('form', { name: 'Confirm Sign Up Form' })).toBeInTheDocument();
         });
       });
     });
