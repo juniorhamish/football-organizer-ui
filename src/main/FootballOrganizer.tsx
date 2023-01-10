@@ -7,6 +7,7 @@ import Login from './auth/Login';
 import { User } from './auth/User';
 import UserAvatar from './components/UserAvatar';
 import SignUp from './auth/SignUp';
+import ConfirmSignUp from './auth/ConfirmSignUp';
 
 export default function FootballOrganizer() {
   const navigate = useNavigate();
@@ -36,6 +37,12 @@ export default function FootballOrganizer() {
       navigate('/', { replace: true });
     },
     [navigate, setCurrentUser]
+  );
+  const onSignup = useCallback(
+    (username: string) => {
+      navigate('/confirm', { replace: true, state: { username } });
+    },
+    [navigate]
   );
   const openAccountMenu = useCallback(() => setAccountMenuOpen(true), []);
   const closeAccountMenu = useCallback(() => setAccountMenuOpen(false), []);
@@ -123,7 +130,8 @@ export default function FootballOrganizer() {
       <Routes>
         <Route path="/" element={<div />} />
         <Route path="/login" element={!currentUser ? <Login onLogin={onLogin} /> : <Navigate to="/" replace />} />
-        <Route path="/signup" element={!currentUser ? <SignUp /> : <Navigate to="/" replace />} />
+        <Route path="/signup" element={!currentUser ? <SignUp onSignUp={onSignup} /> : <Navigate to="/" replace />} />
+        <Route path="/confirm" element={!currentUser ? <ConfirmSignUp /> : <Navigate to="/" replace />} />
       </Routes>
     </div>
   );

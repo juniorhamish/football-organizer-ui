@@ -1,7 +1,7 @@
 import { render, within, screen, waitFor } from '@testing-library/react';
 import { Auth } from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
-import { BrowserRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
 import FootballOrganizer from './FootballOrganizer';
 import { signInForm, submitLogin } from './auth/Login.test.helpers';
@@ -30,9 +30,8 @@ const bannerButtonNames = () =>
     .getAllByRole('button')
     .map((button) => button.textContent);
 
-const renderWithRouter = (component: ReactElement, route = '/') => {
-  window.history.pushState({}, 'Home', route);
-  render(component, { wrapper: BrowserRouter });
+const renderWithRouter = (component: ReactElement, route = '/', state = {}) => {
+  render(<MemoryRouter initialEntries={[{ pathname: route, state }]}>{component}</MemoryRouter>);
 };
 
 describe('football organizer', () => {
@@ -173,6 +172,15 @@ describe('football organizer', () => {
         expect(screen.queryByRole('form', { name: 'Sign Up Form' })).not.toBeInTheDocument();
       });
     });
+    it('should redirect to the homepage when navigating to the confirm sign up page and already authenticated', async () => {
+      setLoggedInUser();
+
+      renderWithRouter(<FootballOrganizer />, '/confirm');
+
+      await waitFor(() => {
+        expect(screen.queryByRole('form', { name: 'Confirm Sign Up Form' })).not.toBeInTheDocument();
+      });
+    });
     it('should show the sign in form when sign in is clicked', async () => {
       renderWithRouter(<FootballOrganizer />);
 
@@ -186,6 +194,11 @@ describe('football organizer', () => {
       await userEvent.click(signUpButton());
 
       expect(screen.getByRole('form', { name: 'Sign Up Form' })).toBeInTheDocument();
+    });
+    it('should show the confirm sign up form when navigating to /confirm', () => {
+      renderWithRouter(<FootballOrganizer />, '/confirm');
+
+      expect(screen.getByRole('form', { name: 'Confirm Sign Up Form' })).toBeInTheDocument();
     });
   });
 });
