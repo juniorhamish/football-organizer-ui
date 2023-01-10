@@ -172,9 +172,7 @@ describe('football organizer', () => {
         expect(screen.queryByRole('form', { name: 'Sign Up Form' })).not.toBeInTheDocument();
       });
     });
-    it('should redirect to the homepage when navigating to the confirm sign up page and already authenticated', async () => {
-      setLoggedInUser();
-
+    it('should redirect to the homepage when navigating directly to the confirm sign up page', async () => {
       renderWithRouter(<FootballOrganizer />, '/confirm');
 
       await waitFor(() => {
@@ -196,7 +194,7 @@ describe('football organizer', () => {
       expect(screen.getByRole('form', { name: 'Sign Up Form' })).toBeInTheDocument();
     });
     it('should show the confirm sign up form when navigating to /confirm', () => {
-      renderWithRouter(<FootballOrganizer />, '/confirm');
+      renderWithRouter(<FootballOrganizer />, '/confirm', { username: 'foobar' });
 
       expect(screen.getByRole('form', { name: 'Confirm Sign Up Form' })).toBeInTheDocument();
     });

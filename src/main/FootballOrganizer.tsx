@@ -1,7 +1,7 @@
 import { AppBar, Avatar, Button, IconButton, Link, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Auth } from 'aws-amplify';
-import { Link as RouterLink, Navigate, Route, Routes, useNavigate } from 'react-router-dom';
+import { Link as RouterLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Logout } from '@mui/icons-material';
 import Login from './auth/Login';
 import { User } from './auth/User';
@@ -10,6 +10,7 @@ import SignUp from './auth/SignUp';
 import ConfirmSignUp from './auth/ConfirmSignUp';
 
 export default function FootballOrganizer() {
+  const { state } = useLocation();
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState<User>();
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -131,7 +132,7 @@ export default function FootballOrganizer() {
         <Route path="/" element={<div />} />
         <Route path="/login" element={!currentUser ? <Login onLogin={onLogin} /> : <Navigate to="/" replace />} />
         <Route path="/signup" element={!currentUser ? <SignUp onSignUp={onSignup} /> : <Navigate to="/" replace />} />
-        <Route path="/confirm" element={!currentUser ? <ConfirmSignUp /> : <Navigate to="/" replace />} />
+        <Route path="/confirm" element={state && state.username ? <ConfirmSignUp /> : <Navigate to="/" replace />} />
       </Routes>
     </div>
   );
