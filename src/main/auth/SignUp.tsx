@@ -13,7 +13,7 @@ function RequiredSignUpField({ children }: { children: JSX.Element[] }) {
   );
 }
 
-export default function SignUp() {
+export default function SignUp({ onSignUp }: { onSignUp: (username: string) => void }) {
   const {
     values: { firstName, lastName, username, emailAddress, password },
     onChange,
@@ -27,17 +27,22 @@ export default function SignUp() {
   const signUp = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
-      await Auth.signUp({
-        username,
-        password,
-        attributes: {
-          email: emailAddress,
-          given_name: firstName,
-          family_name: lastName,
-        },
-      });
+      try {
+        await Auth.signUp({
+          username,
+          password,
+          attributes: {
+            email: emailAddress,
+            given_name: firstName,
+            family_name: lastName,
+          },
+        });
+        onSignUp(username);
+      } catch (e) {
+        /* empty */
+      }
     },
-    [username, password, emailAddress, firstName, lastName]
+    [username, password, emailAddress, firstName, lastName, onSignUp]
   );
 
   const signUpDataValid = () => !firstName || !lastName || !username || !emailAddress || !password;
