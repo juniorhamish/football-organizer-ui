@@ -36,6 +36,9 @@ export default function SignUp({ onSignUp }: { onSignUp: (username: string) => v
             given_name: firstName,
             family_name: lastName,
           },
+          autoSignIn: {
+            enabled: true,
+          },
         });
         onSignUp(username);
       } catch (e) {

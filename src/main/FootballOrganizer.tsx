@@ -1,6 +1,6 @@
 import { AppBar, Avatar, Button, IconButton, Link, ListItemIcon, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Auth } from 'aws-amplify';
+import { Auth, Hub } from 'aws-amplify';
 import { Link as RouterLink, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Logout } from '@mui/icons-material';
 import Login from './auth/Login';
@@ -23,8 +23,14 @@ export default function FootballOrganizer() {
       } catch (e) {
         setCurrentUser(undefined);
       }
+      return Hub.listen('auth', ({ payload }) => {
+        const { event } = payload;
+        if (event === 'autoSignIn') {
+          setCurrentUser(payload.data);
+        }
+      });
     })();
-  }, []);
+  }, [setCurrentUser]);
 
   const logOut = useCallback(() => {
     Auth.signOut().then(() => {
@@ -45,6 +51,9 @@ export default function FootballOrganizer() {
     },
     [navigate]
   );
+  const onConfirm = useCallback(() => {
+    navigate('/', { replace: true });
+  }, [navigate]);
   const openAccountMenu = useCallback(() => setAccountMenuOpen(true), []);
   const closeAccountMenu = useCallback(() => setAccountMenuOpen(false), []);
 
@@ -129,10 +138,10 @@ export default function FootballOrganizer() {
         </Menu>
       </AppBar>
       <Routes>
-        <Route path="/" element={<div />} />
+        <Route path="/" element={<div>Homepage</div>} />
         <Route path="/login" element={!currentUser ? <Login onLogin={onLogin} /> : <Navigate to="/" replace />} />
         <Route path="/signup" element={!currentUser ? <SignUp onSignUp={onSignup} /> : <Navigate to="/" replace />} />
-        <Route path="/confirm" element={state && state.username ? <ConfirmSignUp /> : <Navigate to="/" replace />} />
+        <Route path="/confirm" element={state && state.username ? <ConfirmSignUp onConfirm={onConfirm} /> : <Navigate to="/" replace />} />
       </Routes>
     </div>
   );

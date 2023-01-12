@@ -1,6 +1,6 @@
-import { render, within, screen, waitFor } from '@testing-library/react';
+import { render, within, screen, waitFor, act } from '@testing-library/react';
 import { ISignUpResult } from 'amazon-cognito-identity-js';
-import { Auth } from 'aws-amplify';
+import { Auth, Hub } from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
@@ -8,8 +8,9 @@ import FootballOrganizer from './FootballOrganizer';
 import { signInForm, submitLogin } from './auth/Login.test.helpers';
 import mocked = jest.mocked;
 import { submitSignUp } from './auth/SignUp.test.helpers';
+import { confirmSignUp } from './auth/ConfirmSignUp.test.helpers';
 
-jest.mock('aws-amplify');
+jest.mock('@aws-amplify/auth');
 
 const setLoggedInUser = (firstName = 'Foo', lastName = 'Bar') => {
   mocked(Auth).currentAuthenticatedUser.mockResolvedValue({
@@ -89,11 +90,11 @@ describe('football organizer', () => {
         });
       });
       describe('sign up', () => {
-        it('should navigate to the confirm sign up page on successful sign up', async () => {
-          renderWithRouter(<FootballOrganizer />);
+        it('should navigate to the homepage after successful signup confirmation', async () => {
           mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
+          mocked(Auth).confirmSignUp.mockResolvedValue('SUCCESS');
+          renderWithRouter(<FootballOrganizer />);
           await userEvent.click(signUpButton());
-
           await submitSignUp({
             firstName: 'Foo',
             lastName: 'Bar',
@@ -102,7 +103,49 @@ describe('football organizer', () => {
             password: 'MyPassword',
           });
 
-          expect(screen.getByRole('form', { name: 'Confirm Sign Up Form' })).toBeInTheDocument();
+          await confirmSignUp('ABCD');
+
+          expect(screen.getByText('Homepage')).toBeInTheDocument();
+        });
+        it('should log the user in after successful signup confirmation', async () => {
+          mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
+          mocked(Auth).confirmSignUp.mockResolvedValue('SUCCESS');
+          renderWithRouter(<FootballOrganizer />);
+          await userEvent.click(signUpButton());
+          await submitSignUp({
+            firstName: 'D',
+            lastName: 'J',
+            username: 'dj',
+            emailAddress: 'dj@email.com',
+            password: 'FooBar',
+          });
+          await confirmSignUp('ABCD');
+
+          await act(async () => {
+            Hub.dispatch('auth', { event: 'autoSignIn', data: { attributes: { given_name: 'Foo', family_name: 'Bar' } } }, '', Symbol.for('amplify_default'));
+          });
+
+          expect(await accountMenuButton()).toHaveTextContent('FB');
+        });
+        it('should not log the user in when hub events besides autoSignIn are fired', async () => {
+          mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
+          mocked(Auth).confirmSignUp.mockResolvedValue('SUCCESS');
+          renderWithRouter(<FootballOrganizer />);
+          await userEvent.click(signUpButton());
+          await submitSignUp({
+            firstName: 'A',
+            lastName: 'B',
+            username: 'AB',
+            emailAddress: 'ab@email.com',
+            password: 'ABCD1234',
+          });
+          await confirmSignUp('ABCD');
+
+          await act(async () => {
+            Hub.dispatch('auth', { event: 'somethingElse', data: { attributes: {} } }, '', Symbol.for('amplify_default'));
+          });
+
+          expect(signInButton()).toBeInTheDocument();
         });
       });
     });
