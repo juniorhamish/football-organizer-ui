@@ -91,9 +91,9 @@ describe('football organizer', () => {
       });
       describe('sign up', () => {
         it('should navigate to the homepage after successful signup confirmation', async () => {
-          renderWithRouter(<FootballOrganizer />);
           mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
           mocked(Auth).confirmSignUp.mockResolvedValue('SUCCESS');
+          renderWithRouter(<FootballOrganizer />);
           await userEvent.click(signUpButton());
           await submitSignUp({
             firstName: 'Foo',
@@ -102,24 +102,22 @@ describe('football organizer', () => {
             emailAddress: 'foo.bar@email.com',
             password: 'MyPassword',
           });
-          mocked(Auth).currentAuthenticatedUser.mockResolvedValue({});
 
           await confirmSignUp('ABCD');
 
           expect(screen.getByText('Homepage')).toBeInTheDocument();
         });
         it('should log the user in after successful signup confirmation', async () => {
-          renderWithRouter(<FootballOrganizer />);
           mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
           mocked(Auth).confirmSignUp.mockResolvedValue('SUCCESS');
-          mocked(Auth).currentAuthenticatedUser.mockResolvedValue({ attributes: {} });
+          renderWithRouter(<FootballOrganizer />);
           await userEvent.click(signUpButton());
           await submitSignUp({
-            firstName: 'Foo',
-            lastName: 'Bar',
-            username: 'foobar',
-            emailAddress: 'foo.bar@email.com',
-            password: 'MyPassword',
+            firstName: 'D',
+            lastName: 'J',
+            username: 'dj',
+            emailAddress: 'dj@email.com',
+            password: 'FooBar',
           });
           await confirmSignUp('ABCD');
 
