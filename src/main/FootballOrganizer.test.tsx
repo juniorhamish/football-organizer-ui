@@ -1,17 +1,16 @@
-import { render, within, screen, waitFor } from '@testing-library/react';
+import { render, within, screen, waitFor, act } from '@testing-library/react';
 import { ISignUpResult } from 'amazon-cognito-identity-js';
 import { Auth, Hub } from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
-import { act } from 'react-dom/test-utils';
 import FootballOrganizer from './FootballOrganizer';
 import { signInForm, submitLogin } from './auth/Login.test.helpers';
 import mocked = jest.mocked;
 import { submitSignUp } from './auth/SignUp.test.helpers';
 import { confirmSignUp } from './auth/ConfirmSignUp.test.helpers';
 
-jest.mock('aws-amplify');
+jest.mock('@aws-amplify/auth');
 
 const setLoggedInUser = (firstName = 'Foo', lastName = 'Bar') => {
   mocked(Auth).currentAuthenticatedUser.mockResolvedValue({
@@ -124,7 +123,9 @@ describe('football organizer', () => {
           });
           await confirmSignUp('ABCD');
 
-          await act(async () => Hub.dispatch('auth', { event: 'autoSignIn', data: { attributes: {} } }, ''));
+          await act(async () => {
+            Hub.dispatch('auth', { event: 'autoSignIn', data: { attributes: {} } }, '', Symbol.for('amplify_default'));
+          });
 
           expect(await accountMenuButton()).toBeInTheDocument();
         });
