@@ -127,6 +127,26 @@ describe('football organizer', () => {
 
           expect(await accountMenuButton()).toHaveTextContent('FB');
         });
+        it('should not log the user in when hub events besides autoSignIn are fired', async () => {
+          mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
+          mocked(Auth).confirmSignUp.mockResolvedValue('SUCCESS');
+          renderWithRouter(<FootballOrganizer />);
+          await userEvent.click(signUpButton());
+          await submitSignUp({
+            firstName: 'A',
+            lastName: 'B',
+            username: 'AB',
+            emailAddress: 'ab@email.com',
+            password: 'ABCD1234',
+          });
+          await confirmSignUp('ABCD');
+
+          await act(async () => {
+            Hub.dispatch('auth', { event: 'somethingElse', data: { attributes: {} } }, '', Symbol.for('amplify_default'));
+          });
+
+          expect(signInButton()).toBeInTheDocument();
+        });
       });
     });
     describe('authenticated', () => {
