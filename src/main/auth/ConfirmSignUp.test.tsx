@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import ConfirmSignUp from './ConfirmSignUp';
 import mocked = jest.mocked;
-import { codeField, confirmButton, confirmSignUp, confirmSignUpForm } from './ConfirmSignUp.test.helpers';
+import { codeField, confirmButton, confirmSignUp, confirmSignUpForm, resendCodeButton } from './ConfirmSignUp.test.helpers';
 
 jest.mock('aws-amplify');
 
@@ -60,5 +60,13 @@ describe('confirm sign up', () => {
     await confirmSignUp('ABCD1234');
 
     expect(onConfirm).toHaveBeenCalled();
+  });
+  it('should invoke the Auth resend confirmation code on button click', async () => {
+    mocked(Auth).resendSignUp.mockImplementation(() => new Promise(jest.fn()));
+    renderWithRouter('spakowsky');
+
+    await userEvent.click(resendCodeButton());
+
+    expect(Auth.resendSignUp).toHaveBeenCalledWith('spakowsky');
   });
 });

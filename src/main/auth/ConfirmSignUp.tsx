@@ -23,6 +23,10 @@ export default function ConfirmSignUp({ onConfirm }: { onConfirm: () => void }) 
     [code, username, onConfirm]
   );
 
+  const resendCode = useCallback(async () => {
+    await Auth.resendSignUp(username);
+  }, [username]);
+
   return (
     <Container maxWidth="sm">
       <Card raised component="form" aria-label="Confirm Sign Up Form" onSubmit={confirmSignUp}>
@@ -41,6 +45,7 @@ export default function ConfirmSignUp({ onConfirm }: { onConfirm: () => void }) 
           <Button type="submit" disabled={!code}>
             Confirm
           </Button>
+          <Button onClick={resendCode}>Resend Code</Button>
         </CardActions>
       </Card>
     </Container>
