@@ -114,6 +114,9 @@ describe('sign up', () => {
         given_name: 'David',
         family_name: 'Johnston',
       },
+      autoSignIn: {
+        enabled: true,
+      },
     });
   });
   it('should call the onSignUp callback when sign up succeeds', async () => {

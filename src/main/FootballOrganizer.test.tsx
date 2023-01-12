@@ -1,13 +1,15 @@
 import { render, within, screen, waitFor } from '@testing-library/react';
 import { ISignUpResult } from 'amazon-cognito-identity-js';
-import { Auth } from 'aws-amplify';
+import { Auth, Hub } from 'aws-amplify';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
+import { act } from 'react-dom/test-utils';
 import FootballOrganizer from './FootballOrganizer';
 import { signInForm, submitLogin } from './auth/Login.test.helpers';
 import mocked = jest.mocked;
 import { submitSignUp } from './auth/SignUp.test.helpers';
+import { confirmSignUp } from './auth/ConfirmSignUp.test.helpers';
 
 jest.mock('aws-amplify');
 
@@ -89,11 +91,11 @@ describe('football organizer', () => {
         });
       });
       describe('sign up', () => {
-        it('should navigate to the confirm sign up page on successful sign up', async () => {
+        it('should navigate to the homepage after successful signup confirmation', async () => {
           renderWithRouter(<FootballOrganizer />);
           mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
+          mocked(Auth).confirmSignUp.mockResolvedValue('SUCCESS');
           await userEvent.click(signUpButton());
-
           await submitSignUp({
             firstName: 'Foo',
             lastName: 'Bar',
@@ -101,8 +103,30 @@ describe('football organizer', () => {
             emailAddress: 'foo.bar@email.com',
             password: 'MyPassword',
           });
+          mocked(Auth).currentAuthenticatedUser.mockResolvedValue({});
 
-          expect(screen.getByRole('form', { name: 'Confirm Sign Up Form' })).toBeInTheDocument();
+          await confirmSignUp('ABCD');
+
+          expect(screen.getByText('Homepage')).toBeInTheDocument();
+        });
+        it('should log the user in after successful signup confirmation', async () => {
+          renderWithRouter(<FootballOrganizer />);
+          mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
+          mocked(Auth).confirmSignUp.mockResolvedValue('SUCCESS');
+          mocked(Auth).currentAuthenticatedUser.mockResolvedValue({ attributes: {} });
+          await userEvent.click(signUpButton());
+          await submitSignUp({
+            firstName: 'Foo',
+            lastName: 'Bar',
+            username: 'foobar',
+            emailAddress: 'foo.bar@email.com',
+            password: 'MyPassword',
+          });
+          await confirmSignUp('ABCD');
+
+          await act(async () => Hub.dispatch('auth', { event: 'autoSignIn', data: { attributes: {} } }, ''));
+
+          expect(await accountMenuButton()).toBeInTheDocument();
         });
       });
     });

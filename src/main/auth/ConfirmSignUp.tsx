@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom';
 import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import useFormState from '../functional/useFormState';
 
-export default function ConfirmSignUp() {
+export default function ConfirmSignUp({ onConfirm }: { onConfirm: () => void }) {
   const {
     state: { username },
   } = useLocation();
@@ -18,8 +18,9 @@ export default function ConfirmSignUp() {
     async (event: SyntheticEvent) => {
       event.preventDefault();
       await Auth.confirmSignUp(username, code);
+      onConfirm();
     },
-    [code, username]
+    [code, username, onConfirm]
   );
 
   return (
