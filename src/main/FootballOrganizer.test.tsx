@@ -122,10 +122,10 @@ describe('football organizer', () => {
           await confirmSignUp('ABCD');
 
           await act(async () => {
-            Hub.dispatch('auth', { event: 'autoSignIn', data: { attributes: {} } }, '', Symbol.for('amplify_default'));
+            Hub.dispatch('auth', { event: 'autoSignIn', data: { attributes: { given_name: 'Foo', family_name: 'Bar' } } }, '', Symbol.for('amplify_default'));
           });
 
-          expect(await accountMenuButton()).toBeInTheDocument();
+          expect(await accountMenuButton()).toHaveTextContent('FB');
         });
       });
     });
