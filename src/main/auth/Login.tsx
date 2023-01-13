@@ -6,7 +6,7 @@ import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import PasswordField from '../components/PasswordField';
 import useFormState from '../functional/useFormState';
 
-export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
+export default function Login({ onLogin, userNotConfirmed }: { onLogin: (user: User) => void; userNotConfirmed: (username: string) => void }) {
   const baseId = useId();
   const [showLoginFailedMessage, setShowLoginFailedMessage] = useState(false);
   const [loginInProgress, setLoginInProgress] = useState(false);
@@ -28,13 +28,16 @@ export default function Login({ onLogin }: { onLogin: (user: User) => void }) {
       setLoginInProgress(true);
       try {
         onLogin(await Auth.signIn(username, password));
-      } catch (e) {
+      } catch (error) {
         setShowLoginFailedMessage(true);
+        if (error instanceof Error && error.name === 'UserNotConfirmedException') {
+          userNotConfirmed(username);
+        }
       } finally {
         setLoginInProgress(false);
       }
     },
-    [onLogin, username, password]
+    [onLogin, userNotConfirmed, username, password]
   );
 
   return (

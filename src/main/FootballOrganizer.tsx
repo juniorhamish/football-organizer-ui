@@ -45,6 +45,12 @@ export default function FootballOrganizer() {
     },
     [navigate, setCurrentUser]
   );
+  const userNotConfirmed = useCallback(
+    (username: string) => {
+      navigate('/confirm', { replace: true, state: { username } });
+    },
+    [navigate]
+  );
   const onSignup = useCallback(
     (username: string) => {
       navigate('/confirm', { replace: true, state: { username } });
@@ -139,7 +145,7 @@ export default function FootballOrganizer() {
       </AppBar>
       <Routes>
         <Route path="/" element={<div>Homepage</div>} />
-        <Route path="/login" element={!currentUser ? <Login onLogin={onLogin} /> : <Navigate to="/" replace />} />
+        <Route path="/login" element={!currentUser ? <Login onLogin={onLogin} userNotConfirmed={userNotConfirmed} /> : <Navigate to="/" replace />} />
         <Route path="/signup" element={!currentUser ? <SignUp onSignUp={onSignup} /> : <Navigate to="/" replace />} />
         <Route path="/confirm" element={state && state.username ? <ConfirmSignUp onConfirm={onConfirm} /> : <Navigate to="/" replace />} />
       </Routes>

@@ -22,10 +22,10 @@ describe('confirm sign up', () => {
 
     expect(within(confirmSignUpForm()).getByText('Confirm Sign Up')).toBeInTheDocument();
   });
-  it('should have the confirm sign up instructions', () => {
-    renderWithRouter();
+  it('should have the confirm sign up instructions for username', () => {
+    renderWithRouter('whitedevil');
 
-    expect(within(confirmSignUpForm()).getByText('Enter the code that was sent to the email address you provided at registration')).toBeInTheDocument();
+    expect(within(confirmSignUpForm()).getByText('Enter the code that was sent to the email address you provided at registration for user whitedevil')).toBeInTheDocument();
   });
   it('should have a confirmation code field', () => {
     renderWithRouter();
