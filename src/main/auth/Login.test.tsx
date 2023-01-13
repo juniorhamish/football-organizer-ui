@@ -5,12 +5,12 @@ import { Auth } from 'aws-amplify';
 import Login from './Login';
 import mocked = jest.mocked;
 import { User } from './User';
-import { enterPassword, enterUsername, hidePasswordButton, passwordField, showPasswordButton, submitButton, submitLogin, usernameField } from './Login.test.helpers';
+import { enterPassword, enterUsername, hidePasswordButton, passwordField, showPasswordButton, submitButton, submitLogin, usernameField, userNotConfirmedError } from './Login.test.helpers';
 
 jest.mock('aws-amplify');
 
-const renderLogin = (onLogin: (user: User) => void = jest.fn()) => {
-  render(<Login onLogin={onLogin} />);
+const renderLogin = (onLogin: (user: User) => void = jest.fn(), userNotConfirmed: () => void = jest.fn()) => {
+  render(<Login onLogin={onLogin} userNotConfirmed={userNotConfirmed} />);
 };
 
 describe('login form', () => {
@@ -206,5 +206,14 @@ describe('login form', () => {
     renderLogin();
 
     expect(submitButton()).toBeDisabled();
+  });
+  it('should call the user not confirmed callback', async () => {
+    const userNotConfirmed = jest.fn();
+    mocked(Auth).signIn.mockRejectedValue(userNotConfirmedError());
+    renderLogin(jest.fn(), userNotConfirmed);
+
+    await submitLogin('eindhorn', 'finkel');
+
+    expect(userNotConfirmed).toHaveBeenCalledWith('eindhorn');
   });
 });

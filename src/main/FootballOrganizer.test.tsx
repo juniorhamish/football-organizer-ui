@@ -5,10 +5,10 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
 import FootballOrganizer from './FootballOrganizer';
-import { signInForm, submitLogin } from './auth/Login.test.helpers';
+import { signInForm, submitLogin, userNotConfirmedError } from './auth/Login.test.helpers';
 import mocked = jest.mocked;
 import { submitSignUp } from './auth/SignUp.test.helpers';
-import { confirmSignUp } from './auth/ConfirmSignUp.test.helpers';
+import { confirmSignUp, confirmSignUpForm } from './auth/ConfirmSignUp.test.helpers';
 
 jest.mock('@aws-amplify/auth');
 
@@ -87,6 +87,24 @@ describe('football organizer', () => {
           await submitLogin('Foo', 'Bar');
 
           expect(await accountMenuButton()).toBeInTheDocument();
+        });
+        it('should navigate to the sign up confirm page when login fails due to unconfirmed state', async () => {
+          renderWithRouter(<FootballOrganizer />);
+          mocked(Auth).signIn.mockRejectedValue(userNotConfirmedError());
+          await userEvent.click(signInButton());
+
+          await submitLogin('Foo', 'Bar');
+
+          expect(confirmSignUpForm()).toBeInTheDocument();
+        });
+        it('should set the username for the confirm signup page', async () => {
+          renderWithRouter(<FootballOrganizer />);
+          mocked(Auth).signIn.mockRejectedValue(userNotConfirmedError());
+          await userEvent.click(signInButton());
+
+          await submitLogin('aceventura', 'petdetective');
+
+          expect(screen.getByText(/aceventura/)).toBeInTheDocument();
         });
       });
       describe('sign up', () => {

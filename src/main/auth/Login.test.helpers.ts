@@ -14,3 +14,8 @@ export const submitLogin = async (username: string, password: string) => {
   await enterPassword(password);
   await userEvent.click(submitButton());
 };
+export const userNotConfirmedError = () => {
+  const error = new Error('User is not confirmed');
+  error.name = 'UserNotConfirmedException';
+  return error;
+};

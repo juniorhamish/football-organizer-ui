@@ -30,7 +30,7 @@ export default function ConfirmSignUp({ onConfirm }: { onConfirm: () => void }) 
   return (
     <Container maxWidth="sm">
       <Card raised component="form" aria-label="Confirm Sign Up Form" onSubmit={confirmSignUp}>
-        <CardHeader title="Confirm Sign Up" subheader="Enter the code that was sent to the email address you provided at registration" />
+        <CardHeader title="Confirm Sign Up" subheader={`Enter the code that was sent to the email address you provided at registration for user ${username}`} />
         <CardContent>
           <Grid container spacing={1}>
             <Grid item xs={12}>
