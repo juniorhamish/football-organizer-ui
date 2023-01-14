@@ -126,6 +126,14 @@ describe('login form', () => {
 
     expect(passwordField()).not.toHaveErrorMessage();
   });
+  it('should mark the password field as invalid for generic login failures', async () => {
+    mocked(Auth).signIn.mockRejectedValue(new Error());
+    renderLogin();
+
+    await submitLogin('Foo', 'Bar');
+
+    expect(passwordField()).toHaveErrorMessage('Login failed');
+  });
   it('should show a progress mask when login is in progress', async () => {
     mocked(Auth).signIn.mockImplementation(() => new Promise(jest.fn()));
     renderLogin();

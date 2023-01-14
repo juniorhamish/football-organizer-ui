@@ -39,7 +39,7 @@ export default function Login({ onLogin, userNotConfirmed }: { onLogin: (user: U
             userNotConfirmed(username);
           } else if (error.name === 'UserNotFoundException') {
             setShowUserDoesNotExistMessage(true);
-          } else if (error.name === 'NotAuthorizedException') {
+          } else {
             setShowLoginFailedMessage(true);
           }
         }
