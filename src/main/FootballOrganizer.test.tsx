@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import { ReactElement } from 'react';
 import FootballOrganizer from './FootballOrganizer';
-import { signInForm, submitLogin, userNotConfirmedError } from './auth/Login.test.helpers';
+import { signInForm, submitSignIn, userNotConfirmedError } from './auth/SignIn.test.helpers';
 import mocked = jest.mocked;
 import { submitSignUp } from './auth/SignUp.test.helpers';
 import { confirmSignUp, confirmSignUpForm } from './auth/ConfirmSignUp.test.helpers';
@@ -48,7 +48,7 @@ describe('football organizer', () => {
       expect(heading()).toHaveTextContent('Football Organizer');
     });
     it('should navigate to the homepage when the title is clicked', async () => {
-      renderWithRouter(<FootballOrganizer />, '/login');
+      renderWithRouter(<FootballOrganizer />, '/signin');
 
       await userEvent.click(heading());
 
@@ -84,16 +84,16 @@ describe('football organizer', () => {
           mocked(Auth).signIn.mockResolvedValue({ attributes: { given_name: 'Foo', family_name: 'Bar' } });
           await userEvent.click(signInButton());
 
-          await submitLogin('Foo', 'Bar');
+          await submitSignIn('Foo', 'Bar');
 
           expect(await accountMenuButton()).toBeInTheDocument();
         });
-        it('should navigate to the sign up confirm page when login fails due to unconfirmed state', async () => {
+        it('should navigate to the sign up confirm page when sign in fails due to unconfirmed user', async () => {
           renderWithRouter(<FootballOrganizer />);
           mocked(Auth).signIn.mockRejectedValue(userNotConfirmedError());
           await userEvent.click(signInButton());
 
-          await submitLogin('Foo', 'Bar');
+          await submitSignIn('Foo', 'Bar');
 
           expect(confirmSignUpForm()).toBeInTheDocument();
         });
@@ -102,7 +102,7 @@ describe('football organizer', () => {
           mocked(Auth).signIn.mockRejectedValue(userNotConfirmedError());
           await userEvent.click(signInButton());
 
-          await submitLogin('aceventura', 'petdetective');
+          await submitSignIn('aceventura', 'petdetective');
 
           expect(screen.getByText(/aceventura/)).toBeInTheDocument();
         });
@@ -237,7 +237,7 @@ describe('football organizer', () => {
     it('should redirect to the homepage when navigating to the sign in page and already authenticated', async () => {
       setLoggedInUser();
 
-      renderWithRouter(<FootballOrganizer />, '/login');
+      renderWithRouter(<FootballOrganizer />, '/signin');
 
       await waitFor(() => {
         expect(screen.queryByRole('form', { name: 'Sign In Form' })).not.toBeInTheDocument();

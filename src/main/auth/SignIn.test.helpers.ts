@@ -9,7 +9,7 @@ export const enterUsername = async (username: string) => userEvent.type(username
 export const enterPassword = async (password: string) => userEvent.type(passwordField(), password);
 export const showPasswordButton = () => within(signInForm()).getByRole('button', { name: 'Show Password' });
 export const hidePasswordButton = () => within(signInForm()).getByRole('button', { name: 'Hide Password' });
-export const submitLogin = async (username: string, password: string) => {
+export const submitSignIn = async (username: string, password: string) => {
   await enterUsername(username);
   await enterPassword(password);
   await userEvent.click(submitButton());
@@ -24,7 +24,7 @@ export const userDoesNotExistError = () => {
   error.name = 'UserNotFoundException';
   return error;
 };
-export const loginFailedError = () => {
+export const signInFailedError = () => {
   const error = new Error();
   error.name = 'NotAuthorizedException';
   return error;
