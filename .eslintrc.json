@@ -39,6 +39,12 @@
             {
                 "patterns": ["@mui/*/*/*"]
             }
+        ],
+        "react/jsx-props-no-spreading": [
+            "error",
+            {
+                "exceptions": ["BoxShadowOutlinedInput"]
+            }
         ]
     },
     "settings": {
