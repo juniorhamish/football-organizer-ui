@@ -36,7 +36,7 @@ jobs:
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-    - name: Login to Docker Hub
+    - name: Log in to Docker Hub
       if: ${{ github.ref == 'refs/heads/main' }}
       run: docker login -u ${{ secrets.DOCKER_USER }}
         -p ${{ secrets.DOCKER_PASS }}
