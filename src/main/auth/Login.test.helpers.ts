@@ -15,7 +15,17 @@ export const submitLogin = async (username: string, password: string) => {
   await userEvent.click(submitButton());
 };
 export const userNotConfirmedError = () => {
-  const error = new Error('User is not confirmed');
+  const error = new Error();
   error.name = 'UserNotConfirmedException';
+  return error;
+};
+export const userDoesNotExistError = () => {
+  const error = new Error();
+  error.name = 'UserNotFoundException';
+  return error;
+};
+export const loginFailedError = () => {
+  const error = new Error();
+  error.name = 'NotAuthorizedException';
   return error;
 };

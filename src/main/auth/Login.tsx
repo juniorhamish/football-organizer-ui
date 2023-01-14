@@ -9,8 +9,12 @@ import useFormState from '../functional/useFormState';
 export default function Login({ onLogin, userNotConfirmed }: { onLogin: (user: User) => void; userNotConfirmed: (username: string) => void }) {
   const baseId = useId();
   const [showLoginFailedMessage, setShowLoginFailedMessage] = useState(false);
+  const [showUserDoesNotExistMessage, setShowUserDoesNotExistMessage] = useState(false);
   const [loginInProgress, setLoginInProgress] = useState(false);
-  const hideErrors = () => setShowLoginFailedMessage(false);
+  const hideErrors = () => {
+    setShowLoginFailedMessage(false);
+    setShowUserDoesNotExistMessage(false);
+  };
   const {
     values: { username, password },
     onChange,
@@ -21,7 +25,8 @@ export default function Login({ onLogin, userNotConfirmed }: { onLogin: (user: U
     },
     hideErrors
   );
-  const errorMessageFieldId = `${baseId}ErrorMessageField`;
+  const userNameErrorMessageFieldId = `${baseId}UserNameErrorMessageField`;
+  const passwordErrorMessageFieldId = `${baseId}PasswordErrorMessageField`;
   const login = useCallback(
     async (event: SyntheticEvent) => {
       event.preventDefault();
@@ -29,9 +34,14 @@ export default function Login({ onLogin, userNotConfirmed }: { onLogin: (user: U
       try {
         onLogin(await Auth.signIn(username, password));
       } catch (error) {
-        setShowLoginFailedMessage(true);
-        if (error instanceof Error && error.name === 'UserNotConfirmedException') {
-          userNotConfirmed(username);
+        if (error instanceof Error) {
+          if (error.name === 'UserNotConfirmedException') {
+            userNotConfirmed(username);
+          } else if (error.name === 'UserNotFoundException') {
+            setShowUserDoesNotExistMessage(true);
+          } else if (error.name === 'NotAuthorizedException') {
+            setShowLoginFailedMessage(true);
+          }
         }
       } finally {
         setLoginInProgress(false);
@@ -51,7 +61,7 @@ export default function Login({ onLogin, userNotConfirmed }: { onLogin: (user: U
           <CardContent>
             <Grid container spacing={1}>
               <Grid item xs={12}>
-                <FormControl fullWidth margin="dense">
+                <FormControl error={showUserDoesNotExistMessage} fullWidth margin="dense">
                   <InputLabel htmlFor="username-field">Username</InputLabel>
                   <BoxShadowOutlinedInput
                     id="username-field"
@@ -59,31 +69,25 @@ export default function Login({ onLogin, userNotConfirmed }: { onLogin: (user: U
                     label="Username"
                     autoComplete="username"
                     value={username}
-                    error={showLoginFailedMessage}
                     onChange={onChange}
-                    inputProps={showLoginFailedMessage ? { 'aria-errormessage': errorMessageFieldId } : {}}
+                    inputProps={showUserDoesNotExistMessage ? { 'aria-errormessage': userNameErrorMessageFieldId } : {}}
                   />
+                  {showUserDoesNotExistMessage && <FormHelperText id={userNameErrorMessageFieldId}>User does not exist</FormHelperText>}
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <FormControl fullWidth margin="dense">
+                <FormControl error={showLoginFailedMessage} fullWidth margin="dense">
                   <InputLabel htmlFor="password-field">Password</InputLabel>
                   <PasswordField
                     id="password-field"
                     name="password"
-                    error={showLoginFailedMessage}
+                    value={password}
                     onChange={onChange}
-                    inputProps={{ 'aria-errormessage': showLoginFailedMessage ? errorMessageFieldId : undefined }}
+                    inputProps={{ 'aria-errormessage': showLoginFailedMessage ? passwordErrorMessageFieldId : undefined }}
                   />
+                  {showLoginFailedMessage && <FormHelperText id={passwordErrorMessageFieldId}>Login failed</FormHelperText>}
                 </FormControl>
               </Grid>
-              {showLoginFailedMessage && (
-                <Grid item xs={12}>
-                  <FormHelperText error id={errorMessageFieldId}>
-                    Login failed
-                  </FormHelperText>
-                </Grid>
-              )}
             </Grid>
           </CardContent>
           <CardActions>

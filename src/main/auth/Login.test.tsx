@@ -5,7 +5,19 @@ import { Auth } from 'aws-amplify';
 import Login from './Login';
 import mocked = jest.mocked;
 import { User } from './User';
-import { enterPassword, enterUsername, hidePasswordButton, passwordField, showPasswordButton, submitButton, submitLogin, usernameField, userNotConfirmedError } from './Login.test.helpers';
+import {
+  enterPassword,
+  enterUsername,
+  hidePasswordButton,
+  loginFailedError,
+  passwordField,
+  showPasswordButton,
+  submitButton,
+  submitLogin,
+  userDoesNotExistError,
+  usernameField,
+  userNotConfirmedError,
+} from './Login.test.helpers';
 
 jest.mock('aws-amplify');
 
@@ -61,54 +73,39 @@ describe('login form', () => {
 
     expect(screen.getByTestId('VisibilityOffIcon')).toBeInTheDocument();
   });
-  it('should show the failure message if login fails', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
+  it('should show the user does not exist message when login fails', async () => {
+    mocked(Auth).signIn.mockRejectedValue(userDoesNotExistError());
     renderLogin();
 
-    await submitLogin('Foo', 'Bar');
+    await submitLogin('John', 'Hobbs');
 
-    expect(screen.getByText('Login failed')).toBeInTheDocument();
+    expect(usernameField()).toHaveErrorMessage('User does not exist');
   });
-  it('should not show the login failed message by default', () => {
+  it('should not show the user does not exist message by default', () => {
     renderLogin();
 
-    expect(screen.queryByText('Login failed')).not.toBeInTheDocument();
-  });
-  it('should mark the username field as invalid if login fails', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
-    renderLogin();
-
-    await submitLogin('Foo', 'Bar');
-
-    expect(usernameField()).toHaveErrorMessage('Login failed');
-  });
-  it('should not mark the username field as invalid by default', async () => {
-    renderLogin();
-
-    expect(usernameField()).not.toHaveAttribute('aria-invalid', 'true');
-    expect(usernameField()).not.toHaveAttribute('aria-errormessage');
+    expect(usernameField()).not.toHaveErrorMessage();
   });
   it('should show the username field as valid again when it is subsequently modified', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
+    mocked(Auth).signIn.mockRejectedValue(userDoesNotExistError());
     renderLogin();
     await submitLogin('Foo', 'Bar');
 
     await enterUsername('A');
 
-    expect(usernameField()).not.toHaveAttribute('aria-invalid', 'true');
-    expect(usernameField()).not.toHaveAttribute('aria-errormessage');
+    expect(usernameField()).not.toHaveErrorMessage();
   });
-  it('should hide the login failed message when the username field is subsequently edited', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
+  it('should hide the user does not exist message when the username field is subsequently edited', async () => {
+    mocked(Auth).signIn.mockRejectedValue(userDoesNotExistError());
     renderLogin();
     await submitLogin('Foo', 'Bar');
 
     await enterUsername('A');
 
-    expect(screen.queryByText('Login failed')).not.toBeInTheDocument();
+    expect(usernameField()).not.toHaveErrorMessage();
   });
   it('should mark the password field as invalid if login fails', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
+    mocked(Auth).signIn.mockRejectedValue(loginFailedError());
     renderLogin();
 
     await submitLogin('Foo', 'Bar');
@@ -118,27 +115,16 @@ describe('login form', () => {
   it('should not mark the password field as invalid by default', async () => {
     renderLogin();
 
-    expect(passwordField()).not.toHaveAttribute('aria-invalid', 'true');
-    expect(passwordField()).not.toHaveAttribute('aria-errormessage');
+    expect(passwordField()).not.toHaveErrorMessage();
   });
   it('should show the password field as valid again when it is subsequently modified', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
+    mocked(Auth).signIn.mockRejectedValue(loginFailedError());
     renderLogin();
     await submitLogin('Foo', 'Bar');
 
     await enterPassword('A');
 
-    expect(passwordField()).not.toHaveAttribute('aria-invalid', 'true');
-    expect(passwordField()).not.toHaveAttribute('aria-errormessage');
-  });
-  it('should hide the login failed message when the password field is subsequently edited', async () => {
-    mocked(Auth).signIn.mockRejectedValue({});
-    renderLogin();
-    await submitLogin('Foo', 'Bar');
-
-    await enterPassword('A');
-
-    expect(screen.queryByText('Login failed')).not.toBeInTheDocument();
+    expect(passwordField()).not.toHaveErrorMessage();
   });
   it('should show a progress mask when login is in progress', async () => {
     mocked(Auth).signIn.mockImplementation(() => new Promise(jest.fn()));
