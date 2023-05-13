@@ -1,9 +1,13 @@
-import { Button, Card, CardActions, CardContent, CardHeader, Container, FormControl, Grid, InputLabel } from '@mui/material';
+import { Button, CardActions, CardContent, CardHeader, Grid, InputLabel } from '@mui/material';
 import { SyntheticEvent, useCallback } from 'react';
 import { Auth } from 'aws-amplify';
 import { useLocation } from 'react-router-dom';
 import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import useFormState from '../functional/useFormState';
+import FormContainer from '../components/FormContainer';
+import FormCard from '../components/FormCard';
+import FormGrid from '../components/FormGrid';
+import FormControlField from '../components/FormControlField';
 
 export default function ConfirmSignUp({ onConfirm }: { onConfirm: () => void }) {
   const {
@@ -28,18 +32,18 @@ export default function ConfirmSignUp({ onConfirm }: { onConfirm: () => void }) 
   }, [username]);
 
   return (
-    <Container maxWidth="sm">
-      <Card raised component="form" aria-label="Confirm Sign Up Form" onSubmit={confirmSignUp}>
+    <FormContainer>
+      <FormCard aria-label="Confirm Sign Up Form" onSubmit={confirmSignUp}>
         <CardHeader title="Confirm Sign Up" subheader={`Enter the code that was sent to the email address you provided at registration for user ${username}`} />
         <CardContent>
-          <Grid container spacing={1}>
+          <FormGrid>
             <Grid item xs={12}>
-              <FormControl fullWidth margin="dense" required>
+              <FormControlField required>
                 <InputLabel htmlFor="code-field">Code</InputLabel>
                 <BoxShadowOutlinedInput id="code-field" name="code" label="Code" value={code} onChange={onChange} />
-              </FormControl>
+              </FormControlField>
             </Grid>
-          </Grid>
+          </FormGrid>
         </CardContent>
         <CardActions>
           <Button type="submit" disabled={!code}>
@@ -47,7 +51,7 @@ export default function ConfirmSignUp({ onConfirm }: { onConfirm: () => void }) 
           </Button>
           <Button onClick={resendCode}>Resend Code</Button>
         </CardActions>
-      </Card>
-    </Container>
+      </FormCard>
+    </FormContainer>
   );
 }
