@@ -1,10 +1,11 @@
-import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, Grid, InputLabel } from '@mui/material';
+import { Button, Card, CardActions, CardContent, CardHeader, Container, FormControl, FormHelperText, Grid, InputLabel } from '@mui/material';
 import { SyntheticEvent, useCallback, useId, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { User } from './User';
 import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import PasswordField from '../components/PasswordField';
 import useFormState from '../functional/useFormState';
+import ProgressIndicator from '../components/ProgressIndicator';
 
 export default function SignIn({ onSignIn, userNotConfirmed }: { onSignIn: (user: User) => void; userNotConfirmed: (username: string) => void }) {
   const baseId = useId();
@@ -52,9 +53,7 @@ export default function SignIn({ onSignIn, userNotConfirmed }: { onSignIn: (user
 
   return (
     <>
-      <Backdrop open={signInInProgress} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <CircularProgress aria-label="Sign in in progress" />
-      </Backdrop>
+      <ProgressIndicator open={signInInProgress} label="Sign in in progress" />
       <Container maxWidth="sm">
         <Card raised component="form" onSubmit={signIn} aria-label="Sign In Form" aria-busy={signInInProgress}>
           <CardHeader title="Sign In" />
@@ -83,6 +82,7 @@ export default function SignIn({ onSignIn, userNotConfirmed }: { onSignIn: (user
                     name="password"
                     value={password}
                     onChange={onChange}
+                    autoComplete="current-password"
                     inputProps={{ 'aria-errormessage': showSignInFailedMessage ? passwordErrorMessageFieldId : undefined }}
                   />
                   {showSignInFailedMessage && <FormHelperText id={passwordErrorMessageFieldId}>Sign in failed</FormHelperText>}
