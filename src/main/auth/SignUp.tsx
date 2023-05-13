@@ -1,17 +1,8 @@
-import { Button, Card, CardActions, CardContent, CardHeader, Container, FormControl, Grid, InputLabel } from '@mui/material';
+import { Button, CardActions, CardContent, CardHeader, FormControl, Grid, InputLabel } from '@mui/material';
 import { SyntheticEvent, useCallback } from 'react';
 import { Auth } from 'aws-amplify';
-import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
-import PasswordField from '../components/PasswordField';
 import useFormState from '../functional/useFormState';
-
-function RequiredSignUpField({ children }: { children: JSX.Element[] }) {
-  return (
-    <FormControl fullWidth margin="dense" required>
-      {children}
-    </FormControl>
-  );
-}
+import { BoxShadowOutlinedInput, FormCard, FormContainer, FormControlField, FormGrid, PasswordField } from '../components';
 
 export default function SignUp({ onSignUp }: { onSignUp: (username: string) => void }) {
   const {
@@ -51,42 +42,42 @@ export default function SignUp({ onSignUp }: { onSignUp: (username: string) => v
   const signUpDataValid = () => !firstName || !lastName || !username || !emailAddress || !password;
 
   return (
-    <Container maxWidth="sm">
-      <Card raised component="form" onSubmit={signUp} aria-label="Sign Up Form">
+    <FormContainer>
+      <FormCard onSubmit={signUp} aria-label="Sign Up Form">
         <CardHeader title="Sign Up" />
         <CardContent>
-          <Grid container spacing={1}>
+          <FormGrid>
             <Grid item sm={6} xs={12}>
-              <RequiredSignUpField>
+              <FormControlField required>
                 <InputLabel htmlFor="first-name-field">First Name</InputLabel>
                 <BoxShadowOutlinedInput id="first-name-field" name="firstName" label="First Name" autoComplete="given-name" onChange={onChange} />
-              </RequiredSignUpField>
+              </FormControlField>
             </Grid>
             <Grid item sm={6} xs={12}>
-              <RequiredSignUpField>
+              <FormControlField required>
                 <InputLabel htmlFor="last-name-field">Last Name</InputLabel>
                 <BoxShadowOutlinedInput id="last-name-field" name="lastName" label="Last Name" autoComplete="family-name" onChange={onChange} />
-              </RequiredSignUpField>
+              </FormControlField>
             </Grid>
             <Grid item xs={12}>
-              <RequiredSignUpField>
+              <FormControlField required>
                 <InputLabel htmlFor="username-field">Username</InputLabel>
                 <BoxShadowOutlinedInput id="username-field" name="username" label="Username" autoComplete="username" onChange={onChange} />
-              </RequiredSignUpField>
+              </FormControlField>
             </Grid>
             <Grid item xs={12}>
-              <RequiredSignUpField>
+              <FormControlField required>
                 <InputLabel htmlFor="email-address-field">Email Address</InputLabel>
                 <BoxShadowOutlinedInput id="email-address-field" name="emailAddress" label="Email Address" type="email" autoComplete="email" onChange={onChange} />
-              </RequiredSignUpField>
+              </FormControlField>
             </Grid>
             <Grid item xs={12}>
-              <RequiredSignUpField>
+              <FormControlField required>
                 <InputLabel htmlFor="password-field">Password</InputLabel>
                 <PasswordField id="password-field" name="password" autoComplete="new-password" onChange={onChange} />
-              </RequiredSignUpField>
+              </FormControlField>
             </Grid>
-          </Grid>
+          </FormGrid>
         </CardContent>
         <CardActions>
           <FormControl>
@@ -95,7 +86,7 @@ export default function SignUp({ onSignUp }: { onSignUp: (username: string) => v
             </Button>
           </FormControl>
         </CardActions>
-      </Card>
-    </Container>
+      </FormCard>
+    </FormContainer>
   );
 }

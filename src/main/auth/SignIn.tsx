@@ -1,10 +1,9 @@
-import { Backdrop, Button, Card, CardActions, CardContent, CardHeader, CircularProgress, Container, FormControl, FormHelperText, Grid, InputLabel } from '@mui/material';
+import { Button, CardActions, CardContent, CardHeader, FormHelperText, Grid, InputLabel } from '@mui/material';
 import { SyntheticEvent, useCallback, useId, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { User } from './User';
-import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
-import PasswordField from '../components/PasswordField';
 import useFormState from '../functional/useFormState';
+import { FormContainer, FormCard, FormGrid, FormControlField, ProgressIndicator, BoxShadowOutlinedInput, PasswordField } from '../components';
 
 export default function SignIn({ onSignIn, userNotConfirmed }: { onSignIn: (user: User) => void; userNotConfirmed: (username: string) => void }) {
   const baseId = useId();
@@ -52,16 +51,14 @@ export default function SignIn({ onSignIn, userNotConfirmed }: { onSignIn: (user
 
   return (
     <>
-      <Backdrop open={signInInProgress} sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-        <CircularProgress aria-label="Sign in in progress" />
-      </Backdrop>
-      <Container maxWidth="sm">
-        <Card raised component="form" onSubmit={signIn} aria-label="Sign In Form" aria-busy={signInInProgress}>
+      <ProgressIndicator open={signInInProgress} label="Sign in in progress" />
+      <FormContainer>
+        <FormCard onSubmit={signIn} aria-label="Sign In Form" aria-busy={signInInProgress}>
           <CardHeader title="Sign In" />
           <CardContent>
-            <Grid container spacing={1}>
+            <FormGrid>
               <Grid item xs={12}>
-                <FormControl error={showUserDoesNotExistMessage} fullWidth margin="dense">
+                <FormControlField error={showUserDoesNotExistMessage}>
                   <InputLabel htmlFor="username-field">Username</InputLabel>
                   <BoxShadowOutlinedInput
                     id="username-field"
@@ -73,30 +70,31 @@ export default function SignIn({ onSignIn, userNotConfirmed }: { onSignIn: (user
                     inputProps={showUserDoesNotExistMessage ? { 'aria-errormessage': userNameErrorMessageFieldId } : {}}
                   />
                   {showUserDoesNotExistMessage && <FormHelperText id={userNameErrorMessageFieldId}>User does not exist</FormHelperText>}
-                </FormControl>
+                </FormControlField>
               </Grid>
               <Grid item xs={12}>
-                <FormControl error={showSignInFailedMessage} fullWidth margin="dense">
+                <FormControlField error={showSignInFailedMessage}>
                   <InputLabel htmlFor="password-field">Password</InputLabel>
                   <PasswordField
                     id="password-field"
                     name="password"
                     value={password}
                     onChange={onChange}
+                    autoComplete="current-password"
                     inputProps={{ 'aria-errormessage': showSignInFailedMessage ? passwordErrorMessageFieldId : undefined }}
                   />
                   {showSignInFailedMessage && <FormHelperText id={passwordErrorMessageFieldId}>Sign in failed</FormHelperText>}
-                </FormControl>
+                </FormControlField>
               </Grid>
-            </Grid>
+            </FormGrid>
           </CardContent>
           <CardActions>
             <Button type="submit" disabled={!username || !password}>
               Submit
             </Button>
           </CardActions>
-        </Card>
-      </Container>
+        </FormCard>
+      </FormContainer>
     </>
   );
 }
