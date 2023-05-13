@@ -32,10 +32,9 @@ export default function FootballOrganizer() {
     })();
   }, [setCurrentUser]);
 
-  const logOut = useCallback(() => {
-    Auth.signOut().then(() => {
-      setCurrentUser(undefined);
-    });
+  const logOut = useCallback(async () => {
+    await Auth.signOut();
+    setCurrentUser(undefined);
   }, [setCurrentUser]);
 
   const onSignIn = useCallback(
@@ -147,7 +146,7 @@ export default function FootballOrganizer() {
         <Route path="/" element={<div>Homepage</div>} />
         <Route path="/signin" element={!currentUser ? <SignIn onSignIn={onSignIn} userNotConfirmed={userNotConfirmed} /> : <Navigate to="/" replace />} />
         <Route path="/signup" element={!currentUser ? <SignUp onSignUp={onSignup} /> : <Navigate to="/" replace />} />
-        <Route path="/confirm" element={state && state.username ? <ConfirmSignUp onConfirm={onConfirm} /> : <Navigate to="/" replace />} />
+        <Route path="/confirm" element={state?.username ? <ConfirmSignUp onConfirm={onConfirm} /> : <Navigate to="/" replace />} />
       </Routes>
     </div>
   );
