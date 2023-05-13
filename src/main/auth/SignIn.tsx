@@ -2,14 +2,8 @@ import { Button, CardActions, CardContent, CardHeader, FormHelperText, Grid, Inp
 import { SyntheticEvent, useCallback, useId, useState } from 'react';
 import { Auth } from 'aws-amplify';
 import { User } from './User';
-import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
-import PasswordField from '../components/PasswordField';
 import useFormState from '../functional/useFormState';
-import ProgressIndicator from '../components/ProgressIndicator';
-import FormCard from '../components/FormCard';
-import FormContainer from '../components/FormContainer';
-import FormGrid from '../components/FormGrid';
-import FormControlField from '../components/FormControlField';
+import { FormContainer, FormCard, FormGrid, FormControlField, ProgressIndicator, BoxShadowOutlinedInput, PasswordField } from '../components';
 
 export default function SignIn({ onSignIn, userNotConfirmed }: { onSignIn: (user: User) => void; userNotConfirmed: (username: string) => void }) {
   const baseId = useId();

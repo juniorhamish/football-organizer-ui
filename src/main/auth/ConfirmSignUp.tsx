@@ -2,12 +2,8 @@ import { Button, CardActions, CardContent, CardHeader, Grid, InputLabel } from '
 import { SyntheticEvent, useCallback } from 'react';
 import { Auth } from 'aws-amplify';
 import { useLocation } from 'react-router-dom';
-import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
 import useFormState from '../functional/useFormState';
-import FormContainer from '../components/FormContainer';
-import FormCard from '../components/FormCard';
-import FormGrid from '../components/FormGrid';
-import FormControlField from '../components/FormControlField';
+import { BoxShadowOutlinedInput, FormCard, FormContainer, FormControlField, FormGrid } from '../components';
 
 export default function ConfirmSignUp({ onConfirm }: { onConfirm: () => void }) {
   const {

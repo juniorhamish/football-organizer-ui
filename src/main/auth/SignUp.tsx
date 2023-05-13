@@ -1,13 +1,8 @@
 import { Button, CardActions, CardContent, CardHeader, FormControl, Grid, InputLabel } from '@mui/material';
 import { SyntheticEvent, useCallback } from 'react';
 import { Auth } from 'aws-amplify';
-import BoxShadowOutlinedInput from '../components/BoxShadowOutlinedInput';
-import PasswordField from '../components/PasswordField';
 import useFormState from '../functional/useFormState';
-import FormContainer from '../components/FormContainer';
-import FormControlField from '../components/FormControlField';
-import FormCard from '../components/FormCard';
-import FormGrid from '../components/FormGrid';
+import { BoxShadowOutlinedInput, FormCard, FormContainer, FormControlField, FormGrid, PasswordField } from '../components';
 
 export default function SignUp({ onSignUp }: { onSignUp: (username: string) => void }) {
   const {
