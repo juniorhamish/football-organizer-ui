@@ -151,4 +151,60 @@ describe('sign up', () => {
 
     expect(onSignUp).not.toHaveBeenCalled();
   });
+  describe('progress indicator', () => {
+    it('should show a progress mask when sign up is in progress', async () => {
+      mocked(Auth).signUp.mockImplementation(() => new Promise(jest.fn()));
+      renderSignUp();
+      await fillInAllFields();
+
+      await userEvent.click(submitButton());
+
+      expect(screen.getByLabelText('Sign up in progress')).toBeVisible();
+    });
+    it('should mark the sign up form as busy when sign up is in progress', async () => {
+      mocked(Auth).signUp.mockImplementation(() => new Promise(jest.fn()));
+      renderSignUp();
+      await fillInAllFields();
+
+      await userEvent.click(submitButton());
+
+      expect(screen.getByLabelText('Sign Up Form')).toHaveAttribute('aria-busy', 'true');
+    });
+    it('should hide the progress mask when sign up succeeds', async () => {
+      mocked(Auth).signUp.mockResolvedValue({} as ISignUpResult);
+      renderSignUp();
+      await fillInAllFields();
+
+      await userEvent.click(submitButton());
+
+      expect(screen.getByLabelText('Sign up in progress')).not.toBeVisible();
+    });
+    it('should remove the busy marker from the sign up form when sign up succeeds', async () => {
+      mocked(Auth).signIn.mockResolvedValue({});
+      renderSignUp();
+      await fillInAllFields();
+
+      await userEvent.click(submitButton());
+
+      expect(screen.getByLabelText('Sign Up Form')).toHaveAttribute('aria-busy', 'false');
+    });
+    it('should hide the progress mask when sign up fails', async () => {
+      mocked(Auth).signUp.mockRejectedValue({});
+      renderSignUp();
+      await fillInAllFields();
+
+      await userEvent.click(submitButton());
+
+      expect(screen.getByLabelText('Sign up in progress')).not.toBeVisible();
+    });
+    it('should remove the busy marker from the sign up form when sign up fails', async () => {
+      mocked(Auth).signUp.mockRejectedValue({});
+      renderSignUp();
+      await fillInAllFields();
+
+      await userEvent.click(submitButton());
+
+      expect(screen.getByLabelText('Sign Up Form')).toHaveAttribute('aria-busy', 'false');
+    });
+  });
 });

@@ -9,3 +9,8 @@ export const confirmSignUp = async (code: string) => {
   await userEvent.type(codeField(), code);
   await userEvent.click(confirmButton());
 };
+export const confirmSignupFailedError = () => {
+  const error = new Error();
+  error.name = 'CodeMismatchException';
+  return error;
+};
