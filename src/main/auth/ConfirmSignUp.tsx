@@ -28,11 +28,7 @@ export default function ConfirmSignUp({ onConfirm }: { onConfirm: () => void }) 
         await Auth.confirmSignUp(username, code);
         onConfirm();
       } catch (error) {
-        if (error instanceof Error) {
-          if (error.name === 'CodeMismatchException') {
-            setShowInvalidCodeMessage(true);
-          }
-        }
+        setShowInvalidCodeMessage(true);
       } finally {
         setConfirmSignupInProgress(false);
       }
