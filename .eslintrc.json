@@ -45,6 +45,17 @@
             {
                 "exceptions": ["BoxShadowOutlinedInput", "Card", "Container", "Grid", "FormControl"]
             }
+        ],
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": [
+                    "**/*.test.{ts,tsx}",
+                    "**/*.test.helpers.{ts,tsx}",
+                    "**/setupTests.{ts,tsx}"
+                ],
+                "optionalDependencies": false
+            }
         ]
     },
     "settings": {
